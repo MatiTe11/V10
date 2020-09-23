@@ -17,7 +17,7 @@ private:
 	Graphics * m_graphics;
 	ID3D12RootSignature * m_rootSignature;
 	ID3D12PipelineState * m_pso;
-	//Mesh * m_mesh;
+	Mesh * m_mesh;
 	DirectX::XMMATRIX m_modelMat;
 	DirectX::XMMATRIX m_viewMat;
 	DirectX::XMMATRIX m_projectionMat;
@@ -35,6 +35,5 @@ public:
 private:
 	void CreateRootSig();
 	void CreatePSO();
-	void SetVertexBuffer();
 };
 

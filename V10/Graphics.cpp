@@ -80,14 +80,12 @@ void Graphics::Init(HWND hwnd)
 	///
 }
 
-void Graphics::CreatePipelineState()
-{
-	
-}
 
 void Graphics::Update()
 {
-	//auto perpMatrix = DirectX::XMMatrixPerspectiveFovLH(0.5f, 1, 0.1f, 0.1f);
+	static int cnt = 0;
+	cnt++;
+	m_firstObj->Update(cnt);
 
 	RecordCL(m_commandlist[m_currentBackBuffer], m_commandallocator[m_currentBackBuffer]);
 	ExecuteCL(m_commandlist[m_currentBackBuffer]);
@@ -127,7 +125,6 @@ void Graphics::RecordCL(ID3D12GraphicsCommandList* cl, ID3D12CommandAllocator* c
 	
 	cl->RSSetScissorRects(1, &scissorRect);
 	cl->RSSetViewports(1, &viewport);
-	m_firstObj->Update(0);
 	m_firstObj->AddToCL(cl);
 	barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);
 	cl->ResourceBarrier(1, &barrier);

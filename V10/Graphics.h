@@ -31,7 +31,6 @@ private:
 
 public:
 	void Init(HWND hwnd);
-	void CreatePipelineState();
 
 	void Update();
 	void RecordCL(ID3D12GraphicsCommandList* cl, ID3D12CommandAllocator* ca);

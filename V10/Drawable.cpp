@@ -10,7 +10,7 @@ Drawable::Drawable(Graphics * graphics)
 {
 	CreateRootSig();
 	CreatePSO();
-	SetVertexBuffer();
+	m_mesh = new Mesh(graphics);
 }
 
 Drawable::~Drawable()
@@ -24,20 +24,14 @@ void Drawable::AddToCL(ID3D12GraphicsCommandList * cl)
 	DirectX::XMMATRIX mvpMat = DirectX::XMMatrixMultiply(m_modelMat, m_viewMat);
 	mvpMat = DirectX::XMMatrixMultiply(mvpMat, m_projectionMat);
 	cl->SetGraphicsRoot32BitConstants(0, sizeof(DirectX::XMMATRIX) / 4, &mvpMat, 0);
-	D3D12_VERTEX_BUFFER_VIEW vertView;
-	vertView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-	vertView.SizeInBytes = sizeof(float) * 18;
-	vertView.StrideInBytes = sizeof(float) * 6;
-	cl->IASetVertexBuffers(0, 1, &vertView);
-	cl->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	cl->DrawInstanced(3, 1, 0, 0);
-
+	
+	m_mesh->Draw(cl);
 }
 
 void Drawable::Update(float elapsedSeconds)
 {
 	const DirectX::XMVECTOR rotationAxis = DirectX::XMVectorSet(0, 1, 1, 1);
-	m_modelMat = DirectX::XMMatrixRotationAxis(rotationAxis, DirectX::XMConvertToRadians(1));
+	m_modelMat = DirectX::XMMatrixRotationAxis(rotationAxis, DirectX::XMConvertToRadians(elapsedSeconds));
 
 	const DirectX::XMVECTOR eyePosition = DirectX::XMVectorSet(0, 0, -10, 1);
 	const DirectX::XMVECTOR focusPoint = DirectX::XMVectorSet(0, 0, 0, 1);
@@ -119,40 +113,4 @@ void Drawable::CreatePSO()
 	psoDesc.SampleDesc = { 1,0 };
 	psoDesc.SampleMask = 0xffffffff;
 	m_graphics->GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pso));
-}
-
-void Drawable::SetVertexBuffer()
-{
-	ID3D12Resource* vBufferUploadHeap;
-
-	SimpleVertex vertexData[] = { 
-	{ DirectX::XMFLOAT3(-0.5f, 1.0f, 0.5f), DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f) },
-	{ DirectX::XMFLOAT3(0.5f, -0.5f, 0.5f), DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f) },
-	{ DirectX::XMFLOAT3(-0.5f, -0.5f, 0.0f), DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f) } };
-
-	int vertexDataSize = sizeof(SimpleVertex) * 3;
-	m_graphics->GetDevice()->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), // a default heap
-		D3D12_HEAP_FLAG_NONE, // no flags
-		&CD3DX12_RESOURCE_DESC::Buffer(vertexDataSize), // resource description for a buffer
-		D3D12_RESOURCE_STATE_COPY_DEST, // we will start this heap in the copy destination state since we will copy data
-		nullptr, // optimized clear value must be null for this type of resource. used for render targets and depth/stencil buffers
-		IID_PPV_ARGS(&m_vertexBuffer));
-
-
-	m_graphics->GetDevice()->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), // upload heap
-		D3D12_HEAP_FLAG_NONE, // no flags
-		&CD3DX12_RESOURCE_DESC::Buffer(vertexDataSize), // resource description for a buffer
-		D3D12_RESOURCE_STATE_GENERIC_READ, // GPU will read from this buffer and copy its contents to the default heap
-		nullptr,
-		IID_PPV_ARGS(&vBufferUploadHeap));
-
-	void * vertexMap;
-	vBufferUploadHeap->Map(0, NULL, &vertexMap);
-	memcpy(vertexMap, vertexData, vertexDataSize);
-	vBufferUploadHeap->Unmap(0, NULL);
-
-	m_graphics->GetInitCommandList()->CopyBufferRegion(m_vertexBuffer, 0, vBufferUploadHeap, 0, vertexDataSize);
-	auto barrier = Graphics::GetTransition(m_vertexBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-	m_graphics->GetInitCommandList()->ResourceBarrier(1, &barrier);
 }
