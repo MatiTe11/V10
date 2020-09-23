@@ -1,0 +1,3 @@
+za³o¿enia:
+drawable ma swoje pso i rootsig
+drawable ma metodê draw która nagrywa drawcalle na cl podan¹ w argumencie (jest zresetowana)
