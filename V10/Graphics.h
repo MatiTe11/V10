@@ -5,6 +5,7 @@
 
 class Drawable;
 class CommandAllocatorPool;
+class CommandListPool;
 class Graphics
 {
 private:
@@ -26,6 +27,7 @@ private:
 
 	Drawable* m_firstObj;
 	CommandAllocatorPool* m_allocatorPool;
+	CommandListPool* m_commandListPool;
 
 	HRESULT m_result;
 	HWND m_hWnd;
@@ -45,6 +47,7 @@ public:
 	ID3D12Resource * CreateResource(D3D12_RESOURCE_DESC& desc, D3D12_RESOURCE_STATES state);
 	void BringBackAllocators(ID3D12Fence * fence, UINT64 value, int numCL, CommandList* commandLists);
 	void ResetCommandList(int identifier);
+	ID3D12CommandAllocator * GetCommandAllocator();
 
 	static D3D12_RESOURCE_BARRIER GetTransition(ID3D12Resource * res, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 

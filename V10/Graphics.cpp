@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "Drawable.h"
 #include "CommandAllocatorPool.h"
+#include "CommandListPool.h"
 
 
 void Graphics::Init(HWND hwnd)
@@ -197,6 +198,12 @@ void Graphics::BringBackAllocators(ID3D12Fence * fence, UINT64 value, int numCL,
 
 void Graphics::ResetCommandList(int identifier)
 {
+	m_commandListPool->MakeAvailable(identifier);
+}
+
+ID3D12CommandAllocator * Graphics::GetCommandAllocator()
+{
+	return m_allocatorPool->GetAllocator();
 }
 
 D3D12_RESOURCE_BARRIER Graphics::GetTransition(ID3D12Resource * res, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter)

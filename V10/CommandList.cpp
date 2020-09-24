@@ -17,4 +17,5 @@ void CommandList::Reset(ID3D12CommandAllocator * ca)
 {
 	m_associatedCommandAllocator = ca;
 	m_graphics->ResetCommandList(m_identifier);
+	//TODO: powinno równie¿ przywróciæ do commandallocator poola poprzedni associated ca
 }

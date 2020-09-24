@@ -27,6 +27,7 @@
 #include <atlbase.h>
 #include <chrono>
 #include <queue>
+#include <set>
 
 
 struct SimpleVertex
