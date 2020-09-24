@@ -21,26 +21,30 @@
 #include "dxgi1_3.h"
 #include "d3dx12.h"
 #include <DirectXMath.h>
+#include <Xinput.h>
 #include <fstream>
 #include <wrl.h>
 #include <atlbase.h>
+#include <chrono>
+#include <queue>
+
 
 struct SimpleVertex
 {
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 color;
 
-	/*static D3D12_INPUT_LAYOUT_DESC GetLayout() 
+	static D3D12_INPUT_LAYOUT_DESC GetLayout() 
 	{
 		
 		static D3D12_INPUT_ELEMENT_DESC inputElement[] = { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-													{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 } };
+														   { "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 } };
 		static D3D12_INPUT_LAYOUT_DESC  inputLayoutDesc;
 		inputLayoutDesc.NumElements = 2;
 		inputLayoutDesc.pInputElementDescs = inputElement;
 
 		return inputLayoutDesc;
-	}*/
+	}
 };
 
 // reference additional headers your program requires here

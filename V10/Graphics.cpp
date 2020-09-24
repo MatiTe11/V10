@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Graphics.h"
 #include "Drawable.h"
+#include "CommandAllocatorPool.h"
 
 
 void Graphics::Init(HWND hwnd)
@@ -180,6 +181,22 @@ ID3D12Resource * Graphics::CreateResource(D3D12_RESOURCE_DESC& desc, D3D12_RESOU
 		IID_PPV_ARGS(&resource));
 
 	return resource;
+}
+
+void Graphics::BringBackAllocators(ID3D12Fence * fence, UINT64 value, int numCL, CommandList * commandLists)
+{
+	auto finishEvent = CreateEventA(NULL, FALSE, FALSE, NULL);
+	fence->SetEventOnCompletion(value, finishEvent);
+	WaitForSingleObject(finishEvent, INFINITE);
+	for (size_t i = 0; i < numCL; i++)
+	{
+		m_allocatorPool->SetAvailable(commandLists[i].GetAssociatedCommandAllocator());
+	}
+	CloseHandle(finishEvent);
+}
+
+void Graphics::ResetCommandList(int identifier)
+{
 }
 
 D3D12_RESOURCE_BARRIER Graphics::GetTransition(ID3D12Resource * res, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter)

@@ -1,7 +1,10 @@
 #pragma once
 #include "stdafx.h"
+#include "CommandList.h"
+#include "CommandQueue.h"
 
 class Drawable;
+class CommandAllocatorPool;
 class Graphics
 {
 private:
@@ -20,10 +23,9 @@ private:
 	HANDLE m_event;
 	int m_currentBackBuffer;
 	ID3D12Resource* m_backBuffer[frameCount];
-	ID3D12Resource* m_uploadHeap;
-	ID3D12Resource* m_vertexbuffer;
 
 	Drawable* m_firstObj;
+	CommandAllocatorPool* m_allocatorPool;
 
 	HRESULT m_result;
 	HWND m_hWnd;
@@ -41,6 +43,8 @@ public:
 	ID3D12GraphicsCommandList * GetInitCommandList();
 	ID3D12Resource * CreateUploadBuffer(UINT64 size);
 	ID3D12Resource * CreateResource(D3D12_RESOURCE_DESC& desc, D3D12_RESOURCE_STATES state);
+	void BringBackAllocators(ID3D12Fence * fence, UINT64 value, int numCL, CommandList* commandLists);
+	void ResetCommandList(int identifier);
 
 	static D3D12_RESOURCE_BARRIER GetTransition(ID3D12Resource * res, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 

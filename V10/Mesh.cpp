@@ -47,5 +47,5 @@ void Mesh::SetBuffer(void * data, int dataSize, ID3D12Resource ** buffer)
 	auto barrier = Graphics::GetTransition(m_vertexBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 	m_graphics->GetInitCommandList()->ResourceBarrier(1, &barrier);
 
-	//bufferUploadHeap->Release();
+	//bufferUploadHeap->Release(); //nie ruszaæ bo trójk¹t robi siê czarny (nwm czemu)
 }

@@ -6,6 +6,8 @@
 #include "Graphics.h"
 #include <thread>
 
+bool g_quit = false;
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -21,7 +23,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 static void Up(Graphics *g)
 {
-	while (true)
+	while (!g_quit)
 	{
 		g->Update();
 	}
@@ -52,13 +54,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_V10));
 	Graphics graphics;
 	graphics.Init(hWnd);
-	/*graphics.RecordCL();
-	graphics.ExecuteCL();*/
 
-    MSG msg;
+
+	MSG msg;
 	std::thread t1(Up, &graphics);
     // Main message loop:
-    while (true)
+    while (!g_quit)
     {
 		//graphics.Update();
 		GetMessage(&msg, nullptr, 0, 0);
@@ -67,6 +68,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             DispatchMessage(&msg);
         
     }
+	t1.join();
 
     return (int) msg.wParam;
 }
@@ -169,7 +171,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
+		g_quit = true;
         break;
+	/*case WM_QUIT:
+		g_quit = true;
+		break;*/
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

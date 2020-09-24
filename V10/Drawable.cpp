@@ -99,12 +99,7 @@ void Drawable::CreatePSO()
 	psoDesc.VS = VSbytecode;
 	psoDesc.PS = PSbytecode;
 	psoDesc.pRootSignature = m_rootSignature;
-	D3D12_INPUT_LAYOUT_DESC  inputLayoutDesc;
-	inputLayoutDesc.NumElements = 2;
-	D3D12_INPUT_ELEMENT_DESC inputElement[] = { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-											    { "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 } };
-	inputLayoutDesc.pInputElementDescs = inputElement;
-	psoDesc.InputLayout = inputLayoutDesc;
+	psoDesc.InputLayout = SimpleVertex::GetLayout();
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.NumRenderTargets = 1;
