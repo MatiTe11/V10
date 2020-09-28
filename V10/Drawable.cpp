@@ -17,7 +17,7 @@ Drawable::~Drawable()
 {
 }
 
-void Drawable::AddToCL(ID3D12GraphicsCommandList * cl)
+void Drawable::Draw(ID3D12GraphicsCommandList * cl)
 {
 	cl->SetPipelineState(m_pso);
 	cl->SetGraphicsRootSignature(m_rootSignature);
@@ -38,10 +38,6 @@ void Drawable::Update(float elapsedSeconds)
 	const DirectX::XMVECTOR upDirection = DirectX::XMVectorSet(0, 1, 0, 0);
 	m_viewMat = DirectX::XMMatrixLookAtLH(eyePosition, focusPoint, upDirection);
 	m_projectionMat = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(45.0f), (16.0f/9.0f), 0.1f, 100.0f);
-}
-
-void Drawable::Draw()
-{
 }
 
 void Drawable::CreateRootSig()

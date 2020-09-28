@@ -46,7 +46,6 @@ void Graphics::Init(HWND hwnd)
 		m_swapchain->GetBuffer(i, IID_PPV_ARGS(&m_backBuffer[i]));
 		m_device->CreateRenderTargetView(m_backBuffer[i], NULL, rtvHandle);
 		rtvHandle.Offset(1, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
-
 	}
 
 	m_firstObj = new Drawable(this);
@@ -98,7 +97,7 @@ void Graphics::RecordCL(ID3D12GraphicsCommandList* cl)
 	
 	cl->RSSetScissorRects(1, &scissorRect);
 	cl->RSSetViewports(1, &viewport);
-	m_firstObj->AddToCL(cl);
+	m_firstObj->Draw(cl);
 	barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);
 	cl->ResourceBarrier(1, &barrier);
 	cl->Close();

@@ -19,6 +19,6 @@ public:
 	void Draw(ID3D12GraphicsCommandList * cl);
 
 private:
-	void SetBuffer(void * data, int dataSize, ID3D12Resource ** buffer);
+	void SetBuffer(void * data, int dataSize, ID3D12Resource ** buffer, bool index);
 };
 
