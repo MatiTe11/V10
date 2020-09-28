@@ -3,10 +3,14 @@
 #include "Drawable.h"
 #include "CommandAllocatorPool.h"
 #include "CommandListPool.h"
+#include "CommandQueue.h"
 
 
 void Graphics::Init(HWND hwnd)
 {
+	m_commandListPool = new CommandListPool(this);
+	m_allocatorPool = new CommandAllocatorPool(this);
+
 	ID3D12Debug* debugController;
 	D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
 	
@@ -15,12 +19,7 @@ void Graphics::Init(HWND hwnd)
 	m_factory->EnumAdapters(0, &m_adapter);
 	D3D12CreateDevice(m_adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&m_device));
 
-	D3D12_COMMAND_QUEUE_DESC cqDesc{};
-	cqDesc.NodeMask = 0;
-	cqDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-	cqDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_HIGH;
-	cqDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-	m_device->CreateCommandQueue(&cqDesc, IID_PPV_ARGS(&m_commandqueue));
+	m_commandQueue = new CommandQueue(this);
 
 	DXGI_SWAP_CHAIN_DESC scDesc{};
 	scDesc.BufferCount = 2;
@@ -31,23 +30,9 @@ void Graphics::Init(HWND hwnd)
 	scDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	m_hWnd = hwnd;
 	scDesc.OutputWindow = m_hWnd;
-	m_factory->CreateSwapChain(m_commandqueue, &scDesc, &m_swapchain);
+	m_factory->CreateSwapChain(m_commandQueue->Get(), &scDesc, &m_swapchain);
 	m_currentBackBuffer = 0;
 
-	for (size_t i = 0; i < frameCount; i++)
-	{
-		m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandallocator[i]));
-		m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandallocator[i], NULL, IID_PPV_ARGS(&m_commandlist[i]));
-		m_commandlist[i]->Close();
-	}
-	
-	///init init CL
-	ID3D12CommandAllocator *initAllocator;
-	m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&initAllocator));
-	m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, initAllocator, NULL, IID_PPV_ARGS(&m_initCommandList));
-	m_initCommandList->Close();
-	m_initCommandList->Reset(initAllocator, nullptr);
-	///
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDesc;
 	rtvDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvDesc.NumDescriptors = frameCount;
@@ -64,22 +49,7 @@ void Graphics::Init(HWND hwnd)
 
 	}
 
-	m_fencevalue = 0;
-	for (size_t i = 0; i < frameCount; i++)
-	{
-		m_device->CreateFence(m_fencevalue,D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence));
-	}
-	m_event = CreateEventA(NULL, FALSE, FALSE, NULL);
-
-
 	m_firstObj = new Drawable(this);
-
-	///init cl exe
-	m_initCommandList->Close();
-	ID3D12CommandList* cl;
-	m_initCommandList->QueryInterface(IID_PPV_ARGS(&cl));
-	m_commandqueue->ExecuteCommandLists(1, &cl);
-	///
 }
 
 
@@ -89,14 +59,16 @@ void Graphics::Update()
 	cnt++;
 	m_firstObj->Update(cnt);
 
-	RecordCL(m_commandlist[m_currentBackBuffer], m_commandallocator[m_currentBackBuffer]);
-	ExecuteCL(m_commandlist[m_currentBackBuffer]);
-
+	CommandList * cl = GetCommandList();
+	RecordCL(cl->GetCommandList());
+	Execute(cl);
+	m_swapchain->Present(1, 0);
+	m_commandQueue->Sync();
 	m_currentBackBuffer++;
 	m_currentBackBuffer = m_currentBackBuffer % 2;
 }
 
-void Graphics::RecordCL(ID3D12GraphicsCommandList* cl, ID3D12CommandAllocator* ca)
+void Graphics::RecordCL(ID3D12GraphicsCommandList* cl)
 {
 	static float blue = 0;
 	blue += 0.001f;
@@ -119,7 +91,6 @@ void Graphics::RecordCL(ID3D12GraphicsCommandList* cl, ID3D12CommandAllocator* c
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvDescHeap->GetCPUDescriptorHandleForHeapStart());
 	rtvHandle.Offset(m_currentBackBuffer, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
 	float color[4] = { 1,1,blue,1 };
-	cl->Reset(ca, nullptr);
 	auto barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	cl->ResourceBarrier(1, &barrier);
 	cl->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
@@ -133,27 +104,18 @@ void Graphics::RecordCL(ID3D12GraphicsCommandList* cl, ID3D12CommandAllocator* c
 	cl->Close();
 }
 
-void Graphics::ExecuteCL(ID3D12GraphicsCommandList* gcl)
+
+void Graphics::Execute(CommandList * cl)
 {
-	ID3D12CommandList* cl;
-	gcl->QueryInterface(IID_PPV_ARGS(&cl));
-	m_commandqueue->ExecuteCommandLists(1, &cl);
-	m_fencevalue++;
-	m_commandqueue->Signal(m_fence, m_fencevalue);
-	m_fence->SetEventOnCompletion(m_fencevalue, m_event);
-	m_swapchain->Present(1,0);
-	WaitForSingleObject(m_event, INFINITE);
-	ResetEvent(m_event);
+	m_commandQueue->Execute(1, cl);
 }
 
-ID3D12GraphicsCommandList * Graphics::GetDrawingCommandList()
-{
-	return m_initCommandList;
-}
 
-ID3D12GraphicsCommandList * Graphics::GetInitCommandList()
+CommandList * Graphics::GetCommandList()
 {
-	return m_initCommandList;
+	auto cl = m_commandListPool->GetCommandList();
+	cl->Reset(m_allocatorPool->GetAllocator());
+	return cl;
 }
 
 ID3D12Resource * Graphics::CreateUploadBuffer(UINT64 size)

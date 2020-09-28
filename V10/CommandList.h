@@ -10,7 +10,7 @@ class CommandList
 	int m_identifier;
 
 public:
-	CommandList(int identifier, ID3D12GraphicsCommandList* cl);
+	CommandList(int identifier, ID3D12GraphicsCommandList* cl, Graphics * graphics);
 	~CommandList();
 	ID3D12GraphicsCommandList* GetCommandList() { return m_commandList; }
 	ID3D12CommandAllocator* GetAssociatedCommandAllocator() { return m_associatedCommandAllocator; }

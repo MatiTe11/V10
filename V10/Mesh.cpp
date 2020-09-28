@@ -43,9 +43,14 @@ void Mesh::SetBuffer(void * data, int dataSize, ID3D12Resource ** buffer)
 	memcpy(cpuBuffer, data, dataSize);
 	bufferUploadHeap->Unmap(0, NULL);
 
-	m_graphics->GetInitCommandList()->CopyBufferRegion(m_vertexBuffer, 0, bufferUploadHeap, 0, dataSize);
+	CommandList* commandlist = m_graphics->GetCommandList();
+	auto cl = commandlist->GetCommandList();
+
+	cl->CopyBufferRegion(m_vertexBuffer, 0, bufferUploadHeap, 0, dataSize);
 	auto barrier = Graphics::GetTransition(m_vertexBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-	m_graphics->GetInitCommandList()->ResourceBarrier(1, &barrier);
+	cl->ResourceBarrier(1, &barrier);
+	cl->Close();
+	m_graphics->Execute(commandlist);//TODO: Ÿle zrobione
 
 	//bufferUploadHeap->Release(); //nie ruszaæ bo trójk¹t robi siê czarny (nwm czemu)
 }

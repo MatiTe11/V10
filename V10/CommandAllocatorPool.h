@@ -9,7 +9,7 @@ private:
 	std::queue<ID3D12CommandAllocator*> m_availableCA;
 	//std::queue<ID3D12CommandAllocator*> m_inUseCA;
 public:
-	CommandAllocatorPool();
+	CommandAllocatorPool(Graphics * graphics);
 	~CommandAllocatorPool();
 
 	void SetAvailable(ID3D12CommandAllocator* ca) { m_availableCA.push(ca); }

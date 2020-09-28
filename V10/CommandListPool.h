@@ -12,7 +12,7 @@ private:
 	std::queue<int> m_availableIndexes;
 
 public:
-	CommandListPool();
+	CommandListPool(Graphics * graphics);
 	~CommandListPool();
 	CommandList* GetCommandList();
 	void MakeAvailable(int index);

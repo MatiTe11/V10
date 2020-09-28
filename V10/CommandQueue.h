@@ -13,8 +13,10 @@ private:
 	HANDLE m_event;
 
 public:
-	CommandQueue();
+	CommandQueue(Graphics * graphics);
 	~CommandQueue();
 	void Execute(int num, CommandList * commandLists);
+	void Sync();
+	ID3D12CommandQueue * Get() { return m_commandQueue; }
 };
 

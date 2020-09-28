@@ -3,7 +3,8 @@
 #include "Graphics.h"
 
 
-CommandListPool::CommandListPool()
+CommandListPool::CommandListPool(Graphics * graphics)
+	:m_graphics(graphics)
 {
 }
 
@@ -38,6 +39,6 @@ void CommandListPool::AddCommandList()
 	m_graphics->GetDevice()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_graphics->GetCommandAllocator(), NULL, IID_PPV_ARGS(&cl));
 	cl->Close();
 	MakeAvailable(m_commandLists.size());
-	CommandList * commandList = new CommandList(m_commandLists.size(), cl);
+	CommandList * commandList = new CommandList(m_commandLists.size(), cl, m_graphics);
 	m_commandLists.push_back(commandList);
 }

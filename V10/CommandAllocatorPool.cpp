@@ -2,7 +2,8 @@
 #include "CommandAllocatorPool.h"
 
 
-CommandAllocatorPool::CommandAllocatorPool()
+CommandAllocatorPool::CommandAllocatorPool(Graphics * graphics)
+	:m_graphics(graphics)
 {
 }
 
