@@ -7,6 +7,10 @@ private:
 	ID3D12Resource * m_vertexBuffer;
 	ID3D12Resource * m_indexBuffer;
 	SimpleVertex * m_vertexData;
+	D3D12_VERTEX_BUFFER_VIEW m_vertexView;
+	D3D12_INDEX_BUFFER_VIEW m_indexView;
+
+
 	int * m_indexData;
 	int m_vertexCount;
 	int m_indexCount;

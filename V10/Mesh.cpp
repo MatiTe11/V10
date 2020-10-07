@@ -18,6 +18,14 @@ Mesh::Mesh(Graphics * graphics):
 
 	SetBuffer(vertexData, m_vertexCount * sizeof(SimpleVertex), &m_vertexBuffer, false);
 	SetBuffer(indexData, m_indexCount * sizeof(int), &m_indexBuffer, true);
+
+	m_vertexView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
+	m_vertexView.SizeInBytes = sizeof(SimpleVertex) * m_vertexCount;
+	m_vertexView.StrideInBytes = sizeof(SimpleVertex);
+
+	m_indexView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
+	m_indexView.SizeInBytes = sizeof(int) * m_indexCount;
+	m_indexView.Format = DXGI_FORMAT_R32_UINT;
 }
 
 
@@ -27,18 +35,8 @@ Mesh::~Mesh()
 
 void Mesh::Draw(ID3D12GraphicsCommandList * cl)
 {
-	D3D12_VERTEX_BUFFER_VIEW vertView;
-	vertView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-	vertView.SizeInBytes = sizeof(SimpleVertex) * m_vertexCount;
-	vertView.StrideInBytes = sizeof(SimpleVertex);
-
-	D3D12_INDEX_BUFFER_VIEW indexView;
-	indexView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
-	indexView.SizeInBytes = sizeof(int) * m_indexCount;
-	indexView.Format = DXGI_FORMAT_R32_UINT;
-
-	cl->IASetVertexBuffers(0, 1, &vertView);
-	cl->IASetIndexBuffer(&indexView);
+	cl->IASetVertexBuffers(0, 1, &m_vertexView);
+	cl->IASetIndexBuffer(&m_indexView);
 	cl->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	cl->DrawIndexedInstanced(m_indexCount, 1, 0, 0, 0);
 }

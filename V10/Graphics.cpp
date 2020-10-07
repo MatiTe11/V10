@@ -113,7 +113,9 @@ void Graphics::Execute(CommandList * cl)
 CommandList * Graphics::GetCommandList()
 {
 	auto cl = m_commandListPool->GetCommandList();
-	cl->Reset(m_allocatorPool->GetAllocator());
+	auto allocator = m_allocatorPool->GetAllocator();
+	allocator->Reset();
+	cl->Reset(allocator);
 	return cl;
 }
 
@@ -159,7 +161,7 @@ void Graphics::BringBackAllocators(ID3D12Fence * fence, UINT64 value, int numCL,
 
 void Graphics::ResetCommandList(int identifier)
 {
-	m_commandListPool->MakeAvailable(identifier);
+	m_commandListPool->MakeAvailable(identifier); //TODO: Ÿle powinno byæ po execute a nie reset
 }
 
 ID3D12CommandAllocator * Graphics::GetCommandAllocator()
