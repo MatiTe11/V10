@@ -33,13 +33,13 @@
 struct SimpleVertex
 {
 	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 color;
+	DirectX::XMFLOAT2 texCoord;
 
 	static D3D12_INPUT_LAYOUT_DESC GetLayout() 
 	{
 		
 		static D3D12_INPUT_ELEMENT_DESC inputElement[] = { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-														   { "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 } };
+														   { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 } };
 		static D3D12_INPUT_LAYOUT_DESC  inputLayoutDesc;
 		inputLayoutDesc.NumElements = 2;
 		inputLayoutDesc.pInputElementDescs = inputElement;

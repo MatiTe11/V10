@@ -10,11 +10,11 @@ private:
 	Graphics * m_graphics;
 	ID3D12RootSignature * m_rootSignature;
 	ID3D12PipelineState * m_pso;
+	ID3D12DescriptorHeap* m_descHeap;
 	Mesh * m_mesh;
 	DirectX::XMMATRIX m_modelMat;
 	DirectX::XMMATRIX m_viewMat;
 	DirectX::XMMATRIX m_projectionMat;
-	ID3D12Resource * m_vertexBuffer;
 
 public:
 	Drawable(Graphics * graphics);
@@ -26,5 +26,6 @@ public:
 private:
 	void CreateRootSig();
 	void CreatePSO();
+	void CreateDescHeap();
 };
 

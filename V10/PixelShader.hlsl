@@ -1,6 +1,13 @@
-// simple pixel shader
+Texture2D t1 : register(t0);
+SamplerState s1 : register(s0);
 
-float4 main(float4 color : COLOR) : SV_TARGET
+struct VS_OUTPUT
 {
-	return color; // Red, Green, Blue, Alpha
+    float4 position: SV_POSITION;
+    float2 texCoord: TEXCOORD;
+};
+
+float4 main(VS_OUTPUT input) : SV_TARGET
+{
+    return t1.Sample(s1, input.texCoord);
 }

@@ -1,4 +1,3 @@
-// simple vertex shader
 struct ModelViewProjection
 {
 	matrix MVP;
@@ -6,24 +5,23 @@ struct ModelViewProjection
 
 ConstantBuffer<ModelViewProjection> ModelViewProjectionCB : register(b0);
 
-struct VertexPosColor
+struct VertexShaderInput
 {
-	float3 pos : POSITION;
-	float3 col : COLOR;
+	float3 position: POSITION;
+	float2 texCoord: TEXCOORD;
 };
 
 struct VertexShaderOutput
 {
-	float4 color : COLOR;
-	float4 position : SV_POSITION;
+	float4 position: SV_POSITION;
+	float2 texCoord: TEXCOORD;
 };
 
-VertexShaderOutput main(VertexPosColor IN)
+VertexShaderOutput main(VertexShaderInput IN)
 {
 	VertexShaderOutput OUT;
-	OUT.color = float4(IN.col, 1.0f);
-	//OUT.position = float4(IN.pos, 1.0f);
-	OUT.position = mul(ModelViewProjectionCB.MVP, float4(IN.pos, 1.0f));
+	OUT.texCoord = IN.texCoord;
+	OUT.position = mul(ModelViewProjectionCB.MVP, float4(IN.position, 1.0f));
 
 	return OUT;
 }
