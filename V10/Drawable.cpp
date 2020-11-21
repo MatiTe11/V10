@@ -73,9 +73,9 @@ void Drawable::CreateRootSig()
 	// create a static sampler
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
 	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-	sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-	sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-	sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+	sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	sampler.MipLODBias = 0;
 	sampler.MaxAnisotropy = 0;
 	sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
@@ -99,8 +99,10 @@ void Drawable::CreateRootSig()
 
 void Drawable::CreatePSO()
 {
+	auto path = std::filesystem::current_path();
+	path /= "VertexShader.cso";
 	std::ifstream compiledShader;
-	compiledShader.open("C:\\Users\\XPS\\V10\\x64\\Debug\\VertexShader.cso", std::ifstream::in | std::ifstream::binary);
+	compiledShader.open(path.c_str(), std::ifstream::in | std::ifstream::binary);
 	auto a = compiledShader.is_open();
 	char* VSbuffer;
 	int length;
@@ -113,7 +115,9 @@ void Drawable::CreatePSO()
 	D3D12_SHADER_BYTECODE VSbytecode{ 0 };
 	VSbytecode.pShaderBytecode = VSbuffer;
 	VSbytecode.BytecodeLength = length;
-	compiledShader.open("C:\\Users\\XPS\\V10\\x64\\Debug\\PixelShader.cso", std::ifstream::in | std::ifstream::binary);
+	path = std::filesystem::current_path();
+	path /= "PixelShader.cso";
+	compiledShader.open(path.c_str(), std::ifstream::in | std::ifstream::binary);
 	char* PSbuffer;
 	compiledShader.seekg(0, std::ios::end);
 	length = compiledShader.tellg();

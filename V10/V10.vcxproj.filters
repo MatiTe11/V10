@@ -123,6 +123,9 @@
     <Image Include="V10.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="tex.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -136,5 +139,8 @@
     <Text Include="zalozenia.txt">
       <Filter>Resource Files</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
