@@ -4,12 +4,14 @@
 #include "CommandAllocatorPool.h"
 #include "CommandListPool.h"
 #include "CommandQueue.h"
+#include "DumbInputDevice.h"
+#include "XboxInputDevice.h"
 
 
 void Graphics::Init(HWND hwnd)
 {
-	m_commandListPool = new CommandListPool(this);
-	m_allocatorPool = new CommandAllocatorPool(this);
+	m_commandListPool = std::make_unique<CommandListPool>(this);
+	m_allocatorPool = std::make_unique<CommandAllocatorPool>(this);
 
 	ID3D12Debug* debugController;
 	D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
@@ -19,7 +21,7 @@ void Graphics::Init(HWND hwnd)
 	m_factory->EnumAdapters(0, &m_adapter);
 	D3D12CreateDevice(m_adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&m_device));
 
-	m_commandQueue = new CommandQueue(this);
+	m_commandQueue = std::make_unique<CommandQueue>(this);
 
 	DXGI_SWAP_CHAIN_DESC scDesc{};
 	scDesc.BufferCount = 2;
@@ -48,7 +50,10 @@ void Graphics::Init(HWND hwnd)
 		rtvHandle.Offset(1, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
 	}
 
-	m_firstObj = new Drawable(this);
+	m_firstObj = std::make_unique<Drawable>(*this);
+	m_grass = std::make_unique<Drawable>(*this);
+	m_camera = std::make_unique<Camera>();
+	m_inputManager = std::make_unique<InputManager>(new XboxInputDevice());
 }
 
 
@@ -57,6 +62,8 @@ void Graphics::Update()
 	static int cnt = 0;
 	cnt++;
 	m_firstObj->Update(cnt);
+	m_inputManager->Update(1);
+	m_camera->Update(m_inputManager.get());
 
 	CommandList * cl = GetCommandList();
 	RecordCL(cl->GetCommandList());
@@ -69,8 +76,6 @@ void Graphics::Update()
 
 void Graphics::RecordCL(ID3D12GraphicsCommandList* cl)
 {
-	static float blue = 0;
-	blue += 0.001f;
 	D3D12_VIEWPORT viewport;
 	// Fill out the Viewport
 	viewport.TopLeftX = 0;
@@ -89,7 +94,7 @@ void Graphics::RecordCL(ID3D12GraphicsCommandList* cl)
 	
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvDescHeap->GetCPUDescriptorHandleForHeapStart());
 	rtvHandle.Offset(m_currentBackBuffer, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
-	float color[4] = { 1,1,blue,1 };
+	float color[4] = { 1,1,0,1 };
 	auto barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	cl->ResourceBarrier(1, &barrier);
 	cl->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
@@ -97,7 +102,7 @@ void Graphics::RecordCL(ID3D12GraphicsCommandList* cl)
 	
 	cl->RSSetScissorRects(1, &scissorRect);
 	cl->RSSetViewports(1, &viewport);
-	m_firstObj->Draw(cl);
+	m_firstObj->Draw(cl, m_camera.get());
 	barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);
 	cl->ResourceBarrier(1, &barrier);
 	cl->Close();

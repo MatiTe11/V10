@@ -1,3 +1,8 @@
-za�o�enia:
+﻿za³o¿enia:
 drawable ma swoje pso i rootsig
-drawable ma metod� draw kt�ra nagrywa drawcalle na cl podan� w argumencie (jest zresetowana)
+drawable ma metodê draw która nagrywa drawcalle na cl podan¹ w argumencie (jest zresetowana)
+
+//input:
+powinien być w osobnym wątku, ale bez sensu żeby sparwdzał cały czas bo zajmie 100% rdzenia, a dane nie zostaną wykorzystane.
+Dlatego po tym jak coś zawoła get input, to wtedy rusza zczytywanie na osobnym wątku
+Dzieki temu nie bedziemy mieli niepotzebych zczytywan, a jednoczesnie zczytywanie nie blokuje unnych zadan

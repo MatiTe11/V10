@@ -2,33 +2,13 @@
 #include "InputManager.h"
 
 
-InputManager::InputManager()
+InputManager::InputManager(IInputDevice* inputDev)
+	:m_inputDev(inputDev)
 {
-	DWORD dwResult;
-
-	for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
-	{
-		m_connectedControllers[i] = false;
-	}
-
-	for (DWORD i = 0; i < XUSER_MAX_COUNT; i++)
-	{
-		ZeroMemory(&m_controllerState[i], sizeof(XINPUT_STATE));
-
-		// Simply get the state of the controller from XInput.
-		dwResult = XInputGetState(i, &m_controllerState[i]);
-
-		if (dwResult == ERROR_SUCCESS)
-		{
-			// Controller is connected
-			m_connectedControllers[i] = true;
-		}
-		else
-		{
-			// Controller is not connected
-			m_connectedControllers[i] = false;
-		}
-	}
+	m_Position = DirectX::XMVectorSet(0, 0, -10, 1);
+	m_CameraFront = DirectX::XMVectorSet(0, 0, 1, 1);
+	m_yawRadians = 3.14/2.0;
+	m_pitchRadians = 0;
 }
 
 
@@ -36,6 +16,19 @@ InputManager::~InputManager()
 {
 }
 
-void InputManager::Update()
+void InputManager::Update(float elapsedSeconds)
 {
+	auto speed = (float)m_speed * elapsedSeconds;
+	auto offset = DirectX::XMVectorSet(m_inputDev->XAxisMovement() * speed, 0, m_inputDev->ZAxisMovement()*speed, 0);
+	m_Position = DirectX::XMVectorAdd(m_Position, offset);
+	//yaw, pitch roll
+	m_yawRadians += m_inputDev->YawOffset();
+	m_pitchRadians += m_inputDev->PitchOffset();
+	DirectX::XMVECTOR direction;
+	direction = DirectX::XMVectorSet(cos(m_yawRadians) * cos(m_pitchRadians),
+		sin(m_pitchRadians),
+		sin(m_yawRadians) * cos(m_pitchRadians), 1);
+
+	m_CameraFront = DirectX::XMVector3Normalize(direction);
+
 }

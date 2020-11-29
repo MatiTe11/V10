@@ -3,27 +3,24 @@
 #include "Texture2D.h"
 
 
-
-
-Drawable::Drawable(Graphics * graphics)
+Drawable::Drawable(Graphics& graphics)
 	:m_graphics(graphics)
 {
 	CreateRootSig();
 	CreatePSO();
 	CreateDescHeap();
-	m_mesh = new Mesh(graphics);
+	m_mesh = std::make_unique<Mesh>(graphics);
 }
 
 Drawable::~Drawable()
 {
 }
 
-void Drawable::Draw(ID3D12GraphicsCommandList * cl)
+void Drawable::Draw(ID3D12GraphicsCommandList * cl, Camera * cam)
 {
 	cl->SetPipelineState(m_pso);
 	cl->SetGraphicsRootSignature(m_rootSignature);
-	DirectX::XMMATRIX mvpMat = DirectX::XMMatrixMultiply(m_modelMat, m_viewMat);
-	mvpMat = DirectX::XMMatrixMultiply(mvpMat, m_projectionMat);
+	DirectX::XMMATRIX mvpMat = DirectX::XMMatrixMultiply(m_modelMat, cam->GetVPmatrix());
 	cl->SetGraphicsRoot32BitConstants(0, sizeof(DirectX::XMMATRIX) / 4, &mvpMat, 0);
 	cl->SetDescriptorHeaps(1, &m_descHeap);
 	cl->SetGraphicsRootDescriptorTable(1, m_descHeap->GetGPUDescriptorHandleForHeapStart());
@@ -33,13 +30,7 @@ void Drawable::Draw(ID3D12GraphicsCommandList * cl)
 void Drawable::Update(float elapsedSeconds)
 {
 	const DirectX::XMVECTOR rotationAxis = DirectX::XMVectorSet(0, 1, 1, 1);
-	m_modelMat = DirectX::XMMatrixRotationAxis(rotationAxis, DirectX::XMConvertToRadians(elapsedSeconds));
-
-	const DirectX::XMVECTOR eyePosition = DirectX::XMVectorSet(0, 0, -10, 1);
-	const DirectX::XMVECTOR focusPoint = DirectX::XMVectorSet(0, 0, 0, 1);
-	const DirectX::XMVECTOR upDirection = DirectX::XMVectorSet(0, 1, 0, 0);
-	m_viewMat = DirectX::XMMatrixLookAtLH(eyePosition, focusPoint, upDirection);
-	m_projectionMat = DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(45.0f), (16.0f/9.0f), 0.1f, 100.0f);
+	m_modelMat = DirectX::XMMatrixRotationAxis(rotationAxis, DirectX::XMConvertToRadians(0));
 }
 
 void Drawable::CreateRootSig()
@@ -93,7 +84,7 @@ void Drawable::CreateRootSig()
 	rootDesc.pStaticSamplers = &sampler;
 	rootDesc.NumStaticSamplers = 1;
 	D3D12SerializeRootSignature(&rootDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &rootBlob, &errorBlob);
-	m_graphics->GetDevice()->CreateRootSignature(0, rootBlob->GetBufferPointer(), rootBlob->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+	m_graphics.GetDevice()->CreateRootSignature(0, rootBlob->GetBufferPointer(), rootBlob->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
 	rootBlob->Release();
 }
 
@@ -141,7 +132,7 @@ void Drawable::CreatePSO()
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.SampleDesc = { 1,0 };
 	psoDesc.SampleMask = 0xffffffff;
-	m_graphics->GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pso));
+	m_graphics.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pso));
 }
 
 void Drawable::CreateDescHeap()
@@ -151,13 +142,13 @@ void Drawable::CreateDescHeap()
 	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
-	m_graphics->GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&m_descHeap));
+	m_graphics.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&m_descHeap));
 
-	Texture2D texture(m_graphics, 1080, 1080);
+	Texture2D texture(&m_graphics, 1080, 1080);
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Format = texture.GetDesc().Format;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
-	m_graphics->GetDevice()->CreateShaderResourceView(texture.Get(), &srvDesc, m_descHeap->GetCPUDescriptorHandleForHeapStart());
+	m_graphics.GetDevice()->CreateShaderResourceView(texture.Get(), &srvDesc, m_descHeap->GetCPUDescriptorHandleForHeapStart());
 }

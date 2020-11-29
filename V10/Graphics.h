@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "CommandList.h"
+#include "Camera.h"
 
 class Drawable;
 class CommandAllocatorPool;
@@ -15,21 +16,17 @@ private:
 	IDXGIAdapter* m_adapter;
 	IDXGISwapChain* m_swapchain;
 	ID3D12Device* m_device;
-	//ID3D12CommandQueue* m_commandqueue;
-	CommandQueue* m_commandQueue;
-	//ID3D12GraphicsCommandList * m_commandlist[frameCount];
-	//ID3D12GraphicsCommandList * m_initCommandList;
-	//ID3D12CommandAllocator* m_commandallocator[frameCount];
 	ID3D12DescriptorHeap* m_rtvDescHeap;
-	//ID3D12Fence * m_fence;
-	//unsigned int m_fencevalue;
-	//HANDLE m_event;
-	int m_currentBackBuffer;
 	ID3D12Resource* m_backBuffer[frameCount];
+	int m_currentBackBuffer;
 
-	Drawable* m_firstObj;
-	CommandAllocatorPool* m_allocatorPool;
-	CommandListPool* m_commandListPool;
+	std::unique_ptr<CommandQueue> m_commandQueue;
+	std::unique_ptr<CommandAllocatorPool> m_allocatorPool;
+	std::unique_ptr<CommandListPool> m_commandListPool;
+	std::unique_ptr<Drawable> m_firstObj;
+	std::unique_ptr<Drawable> m_grass;
+	std::unique_ptr<Camera> m_camera;
+	std::unique_ptr<InputManager> m_inputManager;
 
 	HRESULT m_result;
 	HWND m_hWnd;

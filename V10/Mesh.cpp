@@ -2,22 +2,37 @@
 #include "Mesh.h"
 
 
-Mesh::Mesh(Graphics * graphics):
+Mesh::Mesh(Graphics& graphics):
 	m_graphics(graphics)
 {
-	SimpleVertex vertexData[] = {
+	m_vertexData = {
 	{ DirectX::XMFLOAT3(-0.5f, 1.0f, 0.5f), DirectX::XMFLOAT2(0.0f, 0.0f) },
 	{ DirectX::XMFLOAT3(0.5f, -0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) },
 	{ DirectX::XMFLOAT3(-0.5f, -0.5f, 0.5f), DirectX::XMFLOAT2(0.0f, 1.0f) },
-	{ DirectX::XMFLOAT3(0.5f, 1.0f, 0.5f), DirectX::XMFLOAT2(1.0f, 0.0f) } };
+	{ DirectX::XMFLOAT3(0.5f, 1.0f, 0.5f), DirectX::XMFLOAT2(1.0f, 0.0f) },
+	
+	{ DirectX::XMFLOAT3(-0.5f, 1.0f, 0.5f), DirectX::XMFLOAT2(1.0f, 0.0f) },
+	{ DirectX::XMFLOAT3(-0.5f, -0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) },
+	{ DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f), DirectX::XMFLOAT2(0.0f, 1.0f) },
+	{ DirectX::XMFLOAT3(-0.5f, 1.0f, -0.5f), DirectX::XMFLOAT2(0.0f, 0.0f) },
+	
+	{ DirectX::XMFLOAT3(0.5f, 1.0f, 0.5f), DirectX::XMFLOAT2(1.0f, 0.0f) },
+	{ DirectX::XMFLOAT3(0.5f, -0.5f, 0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) },
+	{ DirectX::XMFLOAT3(0.5f, -0.5f, -0.5f), DirectX::XMFLOAT2(0.0f, 1.0f) },
+	{ DirectX::XMFLOAT3(0.5f, 1.0f, -0.5f), DirectX::XMFLOAT2(0.0f, 0.0f) },
+	
+	{ DirectX::XMFLOAT3(-0.5f, 1.0f, -0.5f), DirectX::XMFLOAT2(0.0f, 0.0f) },
+	{ DirectX::XMFLOAT3(0.5f, -0.5f, -0.5f), DirectX::XMFLOAT2(1.0f, 1.0f) },
+	{ DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f), DirectX::XMFLOAT2(0.0f, 1.0f) },
+	{ DirectX::XMFLOAT3(0.5f, 1.0f, -0.5f), DirectX::XMFLOAT2(1.0f, 0.0f) } };
 
-	unsigned int indexData[] = { 0,1,2,0,3,1 };
+	m_indexData = { 0,2,1,0,1,3,   4,6,5,7,6,4,  8,9,10,11,8,10,  12,13,14,12,15,13 };
 
-	m_vertexCount = _countof(vertexData);
-	m_indexCount = _countof(indexData);
+	m_vertexCount = m_vertexData.size();
+	m_indexCount = m_indexData.size();
 
-	SetBuffer(vertexData, m_vertexCount * sizeof(SimpleVertex), &m_vertexBuffer, false);
-	SetBuffer(indexData, m_indexCount * sizeof(int), &m_indexBuffer, true);
+	SetBuffer(m_vertexData.data(), m_vertexCount * sizeof(SimpleVertex), &m_vertexBuffer, false);
+	SetBuffer(m_indexData.data(), m_indexCount * sizeof(int), &m_indexBuffer, true);
 
 	m_vertexView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
 	m_vertexView.SizeInBytes = sizeof(SimpleVertex) * m_vertexCount;
@@ -45,15 +60,15 @@ void Mesh::SetBuffer(void * data, int dataSize, ID3D12Resource ** buffer, bool i
 {
 	ID3D12Resource* bufferUploadHeap;
 	auto desc = CD3DX12_RESOURCE_DESC::Buffer(dataSize);
-	*buffer = m_graphics->CreateResource(desc, D3D12_RESOURCE_STATE_COPY_DEST);
-	bufferUploadHeap = m_graphics->CreateUploadBuffer(dataSize);
+	*buffer = m_graphics.CreateResource(desc, D3D12_RESOURCE_STATE_COPY_DEST);
+	bufferUploadHeap = m_graphics.CreateUploadBuffer(dataSize);
 
 	void * cpuBuffer;
 	bufferUploadHeap->Map(0, NULL, &cpuBuffer);
 	memcpy(cpuBuffer, data, dataSize);
 	bufferUploadHeap->Unmap(0, NULL);
 
-	CommandList* commandlist = m_graphics->GetCommandList();
+	CommandList* commandlist = m_graphics.GetCommandList();
 	auto cl = commandlist->GetCommandList();
 
 	cl->CopyBufferRegion(*buffer, 0, bufferUploadHeap, 0, dataSize);
@@ -70,7 +85,7 @@ void Mesh::SetBuffer(void * data, int dataSize, ID3D12Resource ** buffer, bool i
 	}
 		
 	cl->Close();
-	m_graphics->Execute(commandlist);//TODO: Ÿle zrobione
+	m_graphics.Execute(commandlist);//TODO: Ÿle zrobione
 
 	//bufferUploadHeap->Release(); //nie ruszaæ bo trójk¹t robi siê czarny (nwm czemu)
 }

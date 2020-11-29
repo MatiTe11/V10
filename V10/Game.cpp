@@ -4,6 +4,7 @@
 
 Game::Game()
 {
+	//m_input = new  InputManager(nullptr);
 	m_timestamp = std::chrono::high_resolution_clock::now();
 
 }
@@ -24,7 +25,7 @@ void Game::MeasureElapsedTime()
 void Game::Update()
 {
 	MeasureElapsedTime();
-	m_input.Update();
+	//m_input.Update(1);
 	for (auto object : m_gameObjects)
 		object->Update(m_elapsedTimeSeconds);
 }
