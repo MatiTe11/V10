@@ -1,29 +1,32 @@
 #pragma once
 #include "stdafx.h"
 #include "Graphics.h"
-#include "Mesh.h"
+#include "ISimpleShadingObject.h"
 
-
-class Drawable
+namespace V10
 {
-private:
-	Graphics& m_graphics;
-	ID3D12RootSignature * m_rootSignature;
-	ID3D12PipelineState * m_pso;
-	ID3D12DescriptorHeap* m_descHeap;
-	std::unique_ptr<Mesh> m_mesh;
-	DirectX::XMMATRIX m_modelMat;
+	class Mesh;
+	class DescriptorHeap;
 
-public:
-	Drawable(Graphics& graphics);
-	~Drawable();
+	class Drawable // TODO: Change name of this class
+	{
+	private:
+		Graphics& m_graphics;
+		ID3D12RootSignature* m_rootSignature;
+		ID3D12PipelineState* m_pso;
+		std::vector<ISimpleShadingObject*> m_drawableObjects;
 
-	void Draw(ID3D12GraphicsCommandList* commandlist, Camera * cam);
-	void Update(float elapsedSeconds);
+	public:
+		Drawable(Graphics& graphics);
+		~Drawable();
 
-private:
-	void CreateRootSig();
-	void CreatePSO();
-	void CreateDescHeap();
-};
+		void PushDrawableObject(ISimpleShadingObject* obj);
+		void Draw(ID3D12GraphicsCommandList* commandlist, Camera* cam);
+		void Update(float elapsedSeconds);
 
+	private:
+		void CreateRootSig();
+		void CreatePSO();
+	};
+
+}

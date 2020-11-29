@@ -21,7 +21,7 @@ BOOL                InitInstance(HINSTANCE, int, HWND&);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-static void Up(Graphics *g)
+static void Up(V10::Graphics *g)
 {
 	while (!g_quit)
 	{
@@ -52,7 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_V10));
-	Graphics graphics;
+	V10::Graphics graphics;
 	graphics.Init(hWnd);
 
 

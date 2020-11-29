@@ -1,22 +1,25 @@
 #pragma once
 #include "CommandList.h"
 
-class Graphics;
-
-class CommandQueue
+namespace V10
 {
-private:
-	Graphics* m_graphics;
-	ID3D12CommandQueue* m_commandQueue;
-	ID3D12Fence* m_fence;
-	UINT64 m_fenceValue;
-	HANDLE m_event;
+	class Graphics;
 
-public:
-	CommandQueue(Graphics * graphics);
-	~CommandQueue();
-	void Execute(int num, CommandList * commandLists);
-	void Sync();
-	ID3D12CommandQueue * Get() { return m_commandQueue; }
-};
+	class CommandQueue
+	{
+	private:
+		Graphics* m_graphics;
+		ID3D12CommandQueue* m_commandQueue;
+		ID3D12Fence* m_fence;
+		UINT64 m_fenceValue;
+		HANDLE m_event;
 
+	public:
+		CommandQueue(Graphics* graphics);
+		~CommandQueue();
+		void Execute(int num, CommandList* commandLists);
+		void Sync();
+		ID3D12CommandQueue* Get() { return m_commandQueue; }
+	};
+
+}

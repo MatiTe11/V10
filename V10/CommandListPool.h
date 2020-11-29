@@ -2,22 +2,25 @@
 #include "stdafx.h"
 #include "CommandList.h"
 
-class Graphics;
-
-class CommandListPool
+namespace V10
 {
-private:
-	Graphics * m_graphics;
-	std::vector<CommandList*> m_commandLists;
-	std::queue<int> m_availableIndexes;
+	class Graphics;
 
-public:
-	CommandListPool(Graphics * graphics);
-	~CommandListPool();
-	CommandList* GetCommandList();
-	void MakeAvailable(int index);
+	class CommandListPool
+	{
+	private:
+		Graphics* m_graphics;
+		std::vector<CommandList*> m_commandLists;
+		std::queue<int> m_availableIndexes;
 
-private:
-	void AddCommandList();
-};
+	public:
+		CommandListPool(Graphics* graphics);
+		~CommandListPool();
+		CommandList* GetCommandList();
+		void MakeAvailable(int index);
 
+	private:
+		void AddCommandList();
+	};
+
+}

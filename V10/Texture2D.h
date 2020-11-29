@@ -1,22 +1,28 @@
 #pragma once
 #include "Graphics.h"
+#include "DescriptorHeap.h"
 #include <DirectXTex.h>
 
-
-class Texture2D
+namespace V10
 {
-private:
-	Graphics* m_graphics;
-	ID3D12Resource* m_texture;
-	D3D12_RESOURCE_DESC m_textureDesc;
-public:
-	Texture2D(Graphics* graphics, int width, int height, DXGI_FORMAT format = DXGI_FORMAT_R32G32B32_FLOAT);
-	~Texture2D();
+	class Texture2D
+	{
+	private:
+		Graphics& m_graphics;
+		ID3D12Resource* m_texture;
+		D3D12_RESOURCE_DESC m_textureDesc;
+		DescLocation m_descHandle;
 
-	const D3D12_RESOURCE_DESC& GetDesc() { return m_textureDesc; }
-	ID3D12Resource* Get() { return m_texture; }
+	public:
+		Texture2D(Graphics& graphics, DescLocation descHandle, DXGI_FORMAT format = DXGI_FORMAT_R32G32B32_FLOAT);
+		~Texture2D();
 
-private:
-	DirectX::Image LoadFromFile(std::wstring filename);
-};
+		const D3D12_RESOURCE_DESC& GetDesc() { return m_textureDesc; }
+		ID3D12Resource* Get() { return m_texture; }
+		DescLocation GetDescHandle() { return m_descHandle; }
+
+	private:
+		DirectX::Image LoadFromFile(std::wstring filename);
+	};
+}
 
