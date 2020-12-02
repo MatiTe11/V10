@@ -28,16 +28,18 @@ namespace V10
 		cl->SetPipelineState(m_pso);
 		cl->SetGraphicsRootSignature(m_rootSignature);
 
-		Material material{ 0.1,1,1 };
+		Material material{ 0.01,1,1 };
 		//for each object
 		for (int i = 0; i < m_drawableObjects.size(); i++)
 		{
-			DirectX::XMMATRIX mvpMat = DirectX::XMMatrixMultiply(m_drawableObjects[i]->GetModelMatrix(), cam->GetVPmatrix());
-			cl->SetGraphicsRoot32BitConstants(0, sizeof(DirectX::XMMATRIX) / 4, &mvpMat, 0);
+			auto modelMat = m_drawableObjects[i]->GetModelMatrix();
+			auto vpMat =  cam->GetVPmatrix();
+			cl->SetGraphicsRoot32BitConstants(0, sizeof(DirectX::XMMATRIX) / 4, &modelMat, 0);
+			cl->SetGraphicsRoot32BitConstants(1, sizeof(DirectX::XMMATRIX) / 4, &vpMat, 0);
 			cl->SetGraphicsRoot32BitConstants(2, sizeof(Material) / 4, &material, 0);
 			auto desc = m_drawableObjects[i]->GetTextureDescriptor();
 			cl->SetDescriptorHeaps(1, &desc.descHeap);
-			cl->SetGraphicsRootDescriptorTable(1, desc.gpuHandle);
+			cl->SetGraphicsRootDescriptorTable(3, desc.gpuHandle);
 			m_drawableObjects[i]->Draw(cl);
 		}
 	}
@@ -53,15 +55,31 @@ namespace V10
 		ID3DBlob* rootBlob;
 		ID3DBlob* errorBlob;
 
-		D3D12_ROOT_PARAMETER rootParam[3];
+		D3D12_ROOT_PARAMETER rootParam[4];
 
-		D3D12_ROOT_CONSTANTS rc{ 0 };
-		rc.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
-		rc.RegisterSpace = 0;
-		rc.ShaderRegister = 0;
+		D3D12_ROOT_CONSTANTS modelRC{ 0 };
+		modelRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
+		modelRC.RegisterSpace = 0;
+		modelRC.ShaderRegister = 0;
 		rootParam[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParam[0].Constants = rc;
+		rootParam[0].Constants = modelRC;
 		rootParam[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+		D3D12_ROOT_CONSTANTS viewProjRC{ 0 };
+		viewProjRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
+		viewProjRC.RegisterSpace = 0;
+		viewProjRC.ShaderRegister = 1;
+		rootParam[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParam[1].Constants = viewProjRC;
+		rootParam[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+		D3D12_ROOT_CONSTANTS materialRC{ 0 };
+		materialRC.Num32BitValues = sizeof(Material) / 4;
+		materialRC.RegisterSpace = 0;
+		materialRC.ShaderRegister = 2;
+		rootParam[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParam[2].Constants = materialRC;
+		rootParam[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_DESCRIPTOR_RANGE  descriptorTableRanges[1]; // only one range right now
 		descriptorTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // this is a range of shader resource views (descriptors)
@@ -72,17 +90,10 @@ namespace V10
 		D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
 		descriptorTable.NumDescriptorRanges = _countof(descriptorTableRanges);
 		descriptorTable.pDescriptorRanges = &descriptorTableRanges[0];
-		rootParam[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
-		rootParam[1].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
-		rootParam[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
+		rootParam[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
+		rootParam[3].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
+		rootParam[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
 
-		D3D12_ROOT_CONSTANTS materialRC{ 0 };
-		materialRC.Num32BitValues = sizeof(Material) / 4;
-		materialRC.RegisterSpace = 0;
-		materialRC.ShaderRegister = 1;
-		rootParam[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParam[2].Constants = materialRC;
-		rootParam[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		// create a static sampler
 		D3D12_STATIC_SAMPLER_DESC sampler = {};
@@ -102,7 +113,7 @@ namespace V10
 
 		D3D12_ROOT_SIGNATURE_DESC rootDesc{ 0 };
 		rootDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-		rootDesc.NumParameters = 3;
+		rootDesc.NumParameters = 4;
 		rootDesc.pParameters = rootParam;
 		rootDesc.pStaticSamplers = &sampler;
 		rootDesc.NumStaticSamplers = 1;

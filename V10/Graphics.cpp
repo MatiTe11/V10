@@ -54,9 +54,9 @@ namespace V10
 
 		m_drawable = std::make_unique<Drawable>(*this);
 		m_firstObj = std::make_unique<Model>(*this, "wood.jpg");
-		m_firstObj->Move(DirectX::XMVectorSet(2, 0, 2, 1));
+		m_firstObj->Move(DirectX::XMVectorSet(2, 0, -4, 1));
 		m_grass = std::make_unique<Model>(*this);
-		m_grass->Move(DirectX::XMVectorSet(-2, 0, 0, 1));
+		m_grass->Move(DirectX::XMVectorSet(-2, 0, 2, 1));
 		m_drawable->PushDrawableObject(m_firstObj.get());
 		m_drawable->PushDrawableObject(m_grass.get());
 		m_camera = std::make_unique<Camera>();

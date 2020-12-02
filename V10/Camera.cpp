@@ -6,7 +6,7 @@ namespace V10
 	Camera::Camera()
 	{
 
-		m_eyePosition = DirectX::XMVectorSet(0, 0, -10, 1);
+		m_eyePosition = DirectX::XMVectorSet(-10, 0, -10, 1);
 		m_focusPoint = DirectX::XMVectorSet(0, 0, 0, 1);
 		m_upDirection = DirectX::XMVectorSet(0, 1, 0, 0);
 	}
