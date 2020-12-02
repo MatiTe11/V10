@@ -14,7 +14,7 @@ namespace V10
 		DescLocation m_descHandle;
 
 	public:
-		Texture2D(Graphics& graphics, DescLocation descHandle, DXGI_FORMAT format = DXGI_FORMAT_R32G32B32_FLOAT);
+		Texture2D(Graphics& graphics, DescLocation descHandle, std::string texName = "tex.png");
 		~Texture2D();
 
 		const D3D12_RESOURCE_DESC& GetDesc() { return m_textureDesc; }

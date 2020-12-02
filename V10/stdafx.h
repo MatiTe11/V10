@@ -49,4 +49,11 @@ struct SimpleVertex
 	}
 };
 
+struct Material
+{
+	float ambient;
+	float diffuse;
+	float specular;
+};
+
 // reference additional headers your program requires here

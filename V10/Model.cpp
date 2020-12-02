@@ -13,6 +13,15 @@ namespace V10
 		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor());
 		m_Mesh = std::make_unique<Mesh>(graphics);
 	}
+
+	Model::Model(Graphics& graphics, std::string tex)
+		:m_graphics(graphics)
+	{
+		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 2);
+		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), tex);
+		m_Mesh = std::make_unique<Mesh>(graphics);
+	}
+
 	Model::~Model()
 	{
 	}

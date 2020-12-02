@@ -21,6 +21,7 @@ namespace V10
 
     public:
         Model(Graphics& graphics);
+        Model(Graphics& graphics, std::string tex);
         ~Model();
 
         void Update(double elapsedSeconds);

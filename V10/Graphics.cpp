@@ -53,7 +53,7 @@ namespace V10
 		}
 
 		m_drawable = std::make_unique<Drawable>(*this);
-		m_firstObj = std::make_unique<Model>(*this);
+		m_firstObj = std::make_unique<Model>(*this, "wood.jpg");
 		m_firstObj->Move(DirectX::XMVectorSet(2, 0, 0, 1));
 		m_grass = std::make_unique<Model>(*this);
 		m_grass->Move(DirectX::XMVectorSet(-2, 0, 0, 1));
@@ -101,7 +101,7 @@ namespace V10
 
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvDescHeap->GetCPUDescriptorHandleForHeapStart());
 		rtvHandle.Offset(m_currentBackBuffer, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
-		float color[4] = { 1,1,0,1 };
+		float color[4] = { 0.01,0.01,0.01,1 };
 		auto barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		cl->ResourceBarrier(1, &barrier);
 		cl->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);

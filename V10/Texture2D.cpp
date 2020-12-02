@@ -4,11 +4,12 @@
 
 namespace V10
 {
-	Texture2D::Texture2D(Graphics& graphics, DescLocation descHandle, DXGI_FORMAT format)
+	Texture2D::Texture2D(Graphics& graphics, DescLocation descHandle, std::string texName)
 		:m_graphics(graphics), m_texture(nullptr), m_descHandle(descHandle)
 	{
 		auto path = std::filesystem::current_path();
-		path /= "tex.png";
+		//path /= "tex.png";
+		path /= texName;
 		auto img = LoadFromFile(path.wstring());
 		m_textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 		m_textureDesc.Alignment = 0;
