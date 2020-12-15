@@ -26,4 +26,9 @@ namespace V10
 	{
 		return DirectX::XMMatrixMultiply(m_viewMat, m_projectionMat);
 	}
+
+	DirectX::XMVECTOR Camera::GetPosition() const
+	{
+		return m_eyePosition;
+	}
 }

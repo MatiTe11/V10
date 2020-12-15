@@ -34,12 +34,14 @@ namespace V10
 		{
 			auto modelMat = m_drawableObjects[i]->GetModelMatrix();
 			auto vpMat =  cam->GetVPmatrix();
+			auto camPos = cam->GetPosition();
 			cl->SetGraphicsRoot32BitConstants(0, sizeof(DirectX::XMMATRIX) / 4, &modelMat, 0);
 			cl->SetGraphicsRoot32BitConstants(1, sizeof(DirectX::XMMATRIX) / 4, &vpMat, 0);
 			cl->SetGraphicsRoot32BitConstants(2, sizeof(Material) / 4, &material, 0);
+			cl->SetGraphicsRoot32BitConstants(3, sizeof(DirectX::XMVECTOR) / 4, &camPos, 0);
 			auto desc = m_drawableObjects[i]->GetTextureDescriptor();
 			cl->SetDescriptorHeaps(1, &desc.descHeap);
-			cl->SetGraphicsRootDescriptorTable(3, desc.gpuHandle);
+			cl->SetGraphicsRootDescriptorTable(4, desc.gpuHandle);
 			m_drawableObjects[i]->Draw(cl);
 		}
 	}
@@ -55,7 +57,7 @@ namespace V10
 		ID3DBlob* rootBlob;
 		ID3DBlob* errorBlob;
 
-		D3D12_ROOT_PARAMETER rootParam[4];
+		D3D12_ROOT_PARAMETER rootParam[5];
 
 		D3D12_ROOT_CONSTANTS modelRC{ 0 };
 		modelRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
@@ -81,6 +83,14 @@ namespace V10
 		rootParam[2].Constants = materialRC;
 		rootParam[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+		D3D12_ROOT_CONSTANTS camPosRC{ 0 };
+		camPosRC.Num32BitValues = sizeof(DirectX::XMVECTOR) / 4;
+		camPosRC.RegisterSpace = 0;
+		camPosRC.ShaderRegister = 3;
+		rootParam[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParam[3].Constants = camPosRC;
+		rootParam[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
 		D3D12_DESCRIPTOR_RANGE  descriptorTableRanges[1]; // only one range right now
 		descriptorTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // this is a range of shader resource views (descriptors)
 		descriptorTableRanges[0].NumDescriptors = 1; // we only have one texture right now, so the range is only 1
@@ -90,9 +100,9 @@ namespace V10
 		D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
 		descriptorTable.NumDescriptorRanges = _countof(descriptorTableRanges);
 		descriptorTable.pDescriptorRanges = &descriptorTableRanges[0];
-		rootParam[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
-		rootParam[3].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
-		rootParam[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
+		rootParam[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
+		rootParam[4].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
+		rootParam[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
 
 
 		// create a static sampler
@@ -113,7 +123,7 @@ namespace V10
 
 		D3D12_ROOT_SIGNATURE_DESC rootDesc{ 0 };
 		rootDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-		rootDesc.NumParameters = 4;
+		rootDesc.NumParameters = 5;
 		rootDesc.pParameters = rootParam;
 		rootDesc.pStaticSamplers = &sampler;
 		rootDesc.NumStaticSamplers = 1;

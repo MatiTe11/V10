@@ -19,5 +19,6 @@ namespace V10
 		Camera();
 		void Update(InputManager* inputs);
 		DirectX::XMMATRIX GetVPmatrix() const;
+		DirectX::XMVECTOR GetPosition() const;
 	};
 }
