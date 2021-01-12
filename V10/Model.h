@@ -16,12 +16,14 @@ namespace V10
         Graphics& m_graphics;
         std::unique_ptr<Mesh> m_Mesh;
         std::unique_ptr<Texture2D> m_Texture;
+        std::unique_ptr<Texture2D> m_NormalTexture;
         std::unique_ptr<DescriptorHeap> m_descHeap;
         DirectX::XMMATRIX m_modelMat;
 
     public:
         Model(Graphics& graphics);
         Model(Graphics& graphics, std::string tex);
+        Model(Graphics& graphics, std::string tex, std::string normalTex);
         ~Model();
 
         void Update(double elapsedSeconds);

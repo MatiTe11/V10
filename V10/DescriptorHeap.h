@@ -18,6 +18,7 @@ namespace V10
 		ID3D12DescriptorHeap* m_descHeap;
 		UINT m_incrementSize;
 		SIZE_T m_nextFreeSlot;
+		int m_usedSlots;
 
 
 	public:

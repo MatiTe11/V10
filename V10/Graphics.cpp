@@ -57,8 +57,11 @@ namespace V10
 		m_firstObj->Move(DirectX::XMVectorSet(2, 0, -4, 1));
 		m_grass = std::make_unique<Model>(*this);
 		m_grass->Move(DirectX::XMVectorSet(-2, 0, 2, 1));
+		m_bricks = std::make_unique<Model>(*this, "brickTex.jpg", "brickNormal.jpg");
+		m_bricks->Move(DirectX::XMVectorSet(0, 0, -4, 1));
 		m_drawable->PushDrawableObject(m_firstObj.get());
 		m_drawable->PushDrawableObject(m_grass.get());
+		m_drawable->PushDrawableObject(m_bricks.get());
 		m_camera = std::make_unique<Camera>();
 		m_inputManager = std::make_unique<InputManager>(new XboxInputDevice()); //TODO:: mem leak
 	}

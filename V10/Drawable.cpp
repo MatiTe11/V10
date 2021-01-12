@@ -93,7 +93,7 @@ namespace V10
 
 		D3D12_DESCRIPTOR_RANGE  descriptorTableRanges[1]; // only one range right now
 		descriptorTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // this is a range of shader resource views (descriptors)
-		descriptorTableRanges[0].NumDescriptors = 1; // we only have one texture right now, so the range is only 1
+		descriptorTableRanges[0].NumDescriptors = 2; // we only have one texture right now, so the range is only 1
 		descriptorTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
 		descriptorTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
 		descriptorTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;

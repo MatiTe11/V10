@@ -7,18 +7,27 @@
 namespace V10
 {
 	Model::Model(Graphics& graphics)
-		:m_graphics(graphics)
+		:m_graphics(graphics), m_NormalTexture(nullptr)
 	{
-		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 2);
+		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 1);
 		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor());
 		m_Mesh = std::make_unique<Mesh>(graphics);
 	}
 
 	Model::Model(Graphics& graphics, std::string tex)
+		:m_graphics(graphics),m_NormalTexture(nullptr)
+	{
+		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 1);
+		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), tex);
+		m_Mesh = std::make_unique<Mesh>(graphics);
+	}
+
+	Model::Model(Graphics& graphics, std::string tex, std::string normalTex)
 		:m_graphics(graphics)
 	{
 		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 2);
 		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), tex);
+		m_NormalTexture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), normalTex);
 		m_Mesh = std::make_unique<Mesh>(graphics);
 	}
 

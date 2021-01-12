@@ -28,6 +28,7 @@ namespace V10
 		std::unique_ptr<CommandListPool> m_commandListPool;
 		std::unique_ptr<Model> m_firstObj;
 		std::unique_ptr<Model> m_grass;
+		std::unique_ptr<Model> m_bricks;
 		std::unique_ptr<Drawable> m_drawable;
 		std::unique_ptr<Camera> m_camera;
 		std::unique_ptr<InputManager> m_inputManager;
