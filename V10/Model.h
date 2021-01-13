@@ -16,7 +16,7 @@ namespace V10
         Graphics& m_graphics;
         std::vector<Mesh> m_Meshes;
         std::unique_ptr<Texture2D> m_Textures;
-        //std::unique_ptr<Texture2D> m_NormalTexture;
+        std::unique_ptr<Texture2D> m_NormalTextures;
         std::unique_ptr<DescriptorHeap> m_descHeap;
         DirectX::XMMATRIX m_modelMat;
 
