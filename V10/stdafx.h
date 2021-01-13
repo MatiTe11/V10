@@ -7,6 +7,10 @@
 
 #include "targetver.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files
 #include <windows.h>
@@ -29,6 +33,7 @@
 #include <queue>
 #include <set>
 #include <filesystem>
+
 
 
 struct SimpleVertex

@@ -14,16 +14,14 @@ namespace V10
     {
     private:
         Graphics& m_graphics;
-        std::unique_ptr<Mesh> m_Mesh;
-        std::unique_ptr<Texture2D> m_Texture;
-        std::unique_ptr<Texture2D> m_NormalTexture;
+        std::vector<Mesh> m_Meshes;
+        std::unique_ptr<Texture2D> m_Textures;
+        //std::unique_ptr<Texture2D> m_NormalTexture;
         std::unique_ptr<DescriptorHeap> m_descHeap;
         DirectX::XMMATRIX m_modelMat;
 
     public:
-        Model(Graphics& graphics);
-        Model(Graphics& graphics, std::string tex);
-        Model(Graphics& graphics, std::string tex, std::string normalTex);
+        Model(Graphics& graphics, std::string modelPath);
         ~Model();
 
         void Update(double elapsedSeconds);
@@ -32,6 +30,8 @@ namespace V10
         void Draw(ID3D12GraphicsCommandList* cl);
         virtual DirectX::XMMATRIX GetModelMatrix() override;
         virtual DescLocation GetTextureDescriptor() override;
+    private:
+        void ProcessNode(aiNode* node, const aiScene* scene);
     };
 }
 

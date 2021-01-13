@@ -20,6 +20,7 @@ namespace V10
 
 	public:
 		Mesh(Graphics& graphics);
+		Mesh(Graphics& graphics, aiMesh *assMesh);
 		~Mesh();
 
 		void Draw(ID3D12GraphicsCommandList* cl);

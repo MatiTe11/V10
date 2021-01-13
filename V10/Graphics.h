@@ -9,6 +9,7 @@ namespace V10
 	class CommandAllocatorPool;
 	class CommandListPool;
 	class CommandQueue;
+	class CubeGeometry;
 	class Model;
 
 	class Graphics
@@ -26,9 +27,10 @@ namespace V10
 		std::unique_ptr<CommandQueue> m_commandQueue;
 		std::unique_ptr<CommandAllocatorPool> m_allocatorPool;
 		std::unique_ptr<CommandListPool> m_commandListPool;
-		std::unique_ptr<Model> m_firstObj;
-		std::unique_ptr<Model> m_grass;
-		std::unique_ptr<Model> m_bricks;
+		std::unique_ptr<CubeGeometry> m_firstObj;
+		std::unique_ptr<CubeGeometry> m_grass;
+		std::unique_ptr<CubeGeometry> m_bricks;
+		std::unique_ptr<Model> m_backpack;
 		std::unique_ptr<Drawable> m_drawable;
 		std::unique_ptr<Camera> m_camera;
 		std::unique_ptr<InputManager> m_inputManager;

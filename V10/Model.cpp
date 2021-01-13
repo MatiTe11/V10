@@ -6,34 +6,29 @@
 
 namespace V10
 {
-	Model::Model(Graphics& graphics)
-		:m_graphics(graphics), m_NormalTexture(nullptr)
-	{
-		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 1);
-		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor());
-		m_Mesh = std::make_unique<Mesh>(graphics);
-	}
 
-	Model::Model(Graphics& graphics, std::string tex)
-		:m_graphics(graphics),m_NormalTexture(nullptr)
-	{
-		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 1);
-		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), tex);
-		m_Mesh = std::make_unique<Mesh>(graphics);
-	}
-
-	Model::Model(Graphics& graphics, std::string tex, std::string normalTex)
+	Model::Model(Graphics& graphics, std::string path)
 		:m_graphics(graphics)
 	{
-		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 2);
-		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), tex);
-		m_NormalTexture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), normalTex);
-		m_Mesh = std::make_unique<Mesh>(graphics);
+		Assimp::Importer import;
+		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+		{
+			throw std::string("error");
+		}
+
+		ProcessNode(scene->mRootNode, scene);
+
+
+		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 1);
+		m_Textures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), "wood.jpg");
 	}
 
 	Model::~Model()
 	{
 	}
+
 	void Model::Update(double elapsedSeconds)
 	{
 		const DirectX::XMVECTOR rotationAxis = DirectX::XMVectorSet(0, 1, 1, 1);
@@ -45,7 +40,8 @@ namespace V10
 	}
 	void Model::Draw(ID3D12GraphicsCommandList* cl)
 	{
-		m_Mesh->Draw(cl);
+		for(auto mesh : m_Meshes)
+			mesh.Draw(cl);
 	}
 	DirectX::XMMATRIX Model::GetModelMatrix()
 	{
@@ -53,6 +49,18 @@ namespace V10
 	}
 	DescLocation Model::GetTextureDescriptor()
 	{
-		return m_Texture->GetDescHandle();
+		return m_Textures->GetDescHandle();
+	}
+	void Model::ProcessNode(aiNode* node, const aiScene* scene)
+	{
+		for (unsigned int i = 0; i < node->mNumMeshes; i++)
+		{
+			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+			m_Meshes.emplace_back(m_graphics, mesh);
+		}
+		for (unsigned int i = 0; i < node->mNumChildren; i++)
+		{
+			ProcessNode(node->mChildren[i], scene);
+		}
 	}
 }

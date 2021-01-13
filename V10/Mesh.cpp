@@ -45,6 +45,44 @@ namespace V10
 		m_indexView.Format = DXGI_FORMAT_R32_UINT;
 	}
 
+	Mesh::Mesh(Graphics& graphics, aiMesh* mesh)
+		:m_graphics(graphics)
+	{
+		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+		{
+			SimpleVertex vertex;
+			vertex.position = DirectX::XMFLOAT3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+			vertex.normal = DirectX::XMFLOAT3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+			if (mesh->mTextureCoords[0])
+				vertex.texCoord = DirectX::XMFLOAT2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+			else
+				vertex.texCoord = DirectX::XMFLOAT2(0, 0);
+
+			m_vertexData.push_back(vertex);
+		}
+
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+		{
+			aiFace face = mesh->mFaces[i];
+			for (unsigned int j = 0; j < face.mNumIndices; j++)
+				m_indexData.push_back(face.mIndices[j]);
+		}
+
+
+		m_vertexCount = m_vertexData.size();
+		m_indexCount = m_indexData.size();
+
+		SetBuffer(m_vertexData.data(), m_vertexCount * sizeof(SimpleVertex), &m_vertexBuffer, false);
+		SetBuffer(m_indexData.data(), m_indexCount * sizeof(int), &m_indexBuffer, true);
+
+		m_vertexView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
+		m_vertexView.SizeInBytes = sizeof(SimpleVertex) * m_vertexCount;
+		m_vertexView.StrideInBytes = sizeof(SimpleVertex);
+
+		m_indexView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
+		m_indexView.SizeInBytes = sizeof(int) * m_indexCount;
+		m_indexView.Format = DXGI_FORMAT_R32_UINT;
+	}
 
 	Mesh::~Mesh()
 	{
