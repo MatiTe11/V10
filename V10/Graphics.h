@@ -22,6 +22,8 @@ namespace V10
 		ID3D12Device* m_device;
 		ID3D12DescriptorHeap* m_rtvDescHeap;
 		ID3D12Resource* m_backBuffer[frameCount];
+		ID3D12Resource* m_depthStencilBuffer; // This is the memory for our depth buffer. it will also be used for a stencil buffer in a later tutorial
+		ID3D12DescriptorHeap* m_dsDescriptorHeap; // This is a heap for our depth/stencil buffer descriptor
 		int m_currentBackBuffer;
 
 		std::unique_ptr<CommandQueue> m_commandQueue;
