@@ -19,18 +19,23 @@ namespace V10
 
 	void InputManager::Update(float elapsedSeconds)
 	{
-		auto speed = (float)m_speed * elapsedSeconds;
-		auto offset = DirectX::XMVectorSet(m_inputDev->XAxisMovement() * speed, 0, m_inputDev->ZAxisMovement() * speed, 0);
-		m_Position = DirectX::XMVectorAdd(m_Position, offset);
+		using namespace DirectX;
 		//yaw, pitch roll
 		m_yawRadians += m_inputDev->YawOffset();
 		m_pitchRadians += m_inputDev->PitchOffset();
-		DirectX::XMVECTOR direction;
-		direction = DirectX::XMVectorSet(cos(m_yawRadians) * cos(m_pitchRadians),
+		XMVECTOR direction;
+		direction = XMVectorSet(cos(m_yawRadians) * cos(m_pitchRadians),
 			sin(m_pitchRadians),
 			sin(m_yawRadians) * cos(m_pitchRadians), 1);
 
 		m_CameraFront = DirectX::XMVector3Normalize(direction);
 
+		auto speed = (float)m_speed * elapsedSeconds;
+		static XMVECTOR up = DirectX::XMVectorSet(0, 1, 0, 1);
+		auto offset = XMVectorSet(m_inputDev->XAxisMovement() * speed, 0, m_inputDev->ZAxisMovement() * speed, 0);
+		m_Position = XMVectorAdd(m_Position, XMVectorScale(m_CameraFront, m_inputDev->ZAxisMovement() * speed));
+		m_Position = XMVectorAdd(m_Position, XMVectorScale(XMVector3Normalize( XMVector3Cross(m_CameraFront, up)), m_inputDev->XAxisMovement() * speed));
+		//cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		//DirectX::XMVectorScale( m_CameraFront, m_inputDev->XAxisMovement());
 	}
 }

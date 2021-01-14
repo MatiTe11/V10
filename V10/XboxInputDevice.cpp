@@ -40,9 +40,9 @@ namespace V10
 	{
 		auto dwResult = XInputGetState(0, &m_controllerState[0]);
 		if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
-			return 0.01;
-		else if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
 			return -0.01;
+		else if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
+			return 0.01;
 		else
 			return 0;
 	}
