@@ -32,6 +32,7 @@ namespace V10
 		std::unique_ptr<CubeGeometry> m_firstObj;
 		std::unique_ptr<CubeGeometry> m_grass;
 		std::unique_ptr<CubeGeometry> m_bricks;
+		std::unique_ptr<Model> m_dragon;
 		std::unique_ptr<Model> m_backpack;
 		std::unique_ptr<Drawable> m_drawable;
 		std::unique_ptr<Camera> m_camera;

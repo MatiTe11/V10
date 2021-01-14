@@ -23,14 +23,15 @@ struct VS_OUTPUT
     float4 position: POSITION;
     float2 texCoord : TEXCOORD;
     float3 normal: NORMAL;
+    float3x3 TBN :TBN_MATRIX;
 };
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
     float3 rgb_norm = tNorm.Sample(s1, input.texCoord);
     rgb_norm = normalize(rgb_norm * 2 - 1.0);
-    float3 n = input.normal;
-    //input.normal = rgb_norm;
+    rgb_norm = normalize(mul(input.TBN, rgb_norm));
+    input.normal = rgb_norm;
     //diffuse
     float3 lightDir = (-input.position);
     lightDir = normalize(lightDir);

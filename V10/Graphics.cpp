@@ -85,11 +85,14 @@ namespace V10
 		m_grass->Move(DirectX::XMVectorSet(-2, 0, 2, 1));
 		m_bricks = std::make_unique<CubeGeometry>(*this, "brickTex.jpg", "brickNormal.jpg");
 		m_bricks->Move(DirectX::XMVectorSet(0, 0, -4, 1));
-		m_backpack = std::make_unique<Model>(*this, "backpack.obj");
+		m_dragon = std::make_unique<Model>(*this, "dragon");
+		m_dragon->Move(DirectX::XMVectorSet(0, -1, 5, 1));
+		m_backpack = std::make_unique<Model>(*this, "backpack");
 		m_backpack->Move(DirectX::XMVectorSet(0, 0, -10, 1));
 
-		m_drawable->PushDrawableObject(m_firstObj.get());
-		m_drawable->PushDrawableObject(m_grass.get());
+		//m_drawable->PushDrawableObject(m_firstObj.get());
+		//m_drawable->PushDrawableObject(m_grass.get());
+		m_drawable->PushDrawableObject(m_dragon.get());
 		m_drawable->PushDrawableObject(m_backpack.get());
 		//m_drawable->PushDrawableObject(m_bricks.get());
 		m_camera = std::make_unique<Camera>();

@@ -7,11 +7,14 @@
 namespace V10
 {
 
-	Model::Model(Graphics& graphics, std::string path)
+	Model::Model(Graphics& graphics, std::string name)
 		:m_graphics(graphics)
 	{
 		Assimp::Importer import;
-		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate );
+		std::string modelPath = name + ".obj";
+		std::string diffusePath = name + "Diff.png";
+		std::string normalPath = name + "Normal.png";
+		const aiScene* scene = import.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -20,10 +23,9 @@ namespace V10
 
 		ProcessNode(scene->mRootNode, scene);
 
-
 		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 2);
-		m_Textures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), "diffuse.jpg");
-		m_NormalTextures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), "normal.png");
+		m_Textures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), diffusePath);
+		m_NormalTextures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), normalPath);
 	}
 
 	Model::~Model()
