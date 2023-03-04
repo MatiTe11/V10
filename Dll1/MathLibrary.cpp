@@ -54,3 +54,8 @@ unsigned fibonacci_index()
 {
 	return index_;
 }
+
+V10::Graphics * GetGraphics()
+{
+	return nullptr;
+}
