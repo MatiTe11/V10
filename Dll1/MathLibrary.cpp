@@ -2,7 +2,8 @@
 #include "stdafx.h" // use stdafx.h in Visual Studio 2017 and earlier
 #include <utility>
 #include <limits.h>
-#include "MathLibrary.h"
+#include "ExportedHeaders/MathLibrary.h"
+#include "Graphics.h"
 
 // DLL internal state variables:
 static unsigned long long previous_;  // Previous value, if any
@@ -55,7 +56,8 @@ unsigned fibonacci_index()
 	return index_;
 }
 
-V10::Graphics * GetGraphics()
+V10::GraphicsInterface * GetGraphics()
 {
-	return nullptr;
+	return new V10::Graphics();
+
 }

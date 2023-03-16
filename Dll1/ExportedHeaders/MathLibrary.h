@@ -1,6 +1,6 @@
 // MathLibrary.h - Contains declarations of math functions
 #pragma once
-#include "Graphics.h"
+#include "../GraphicsInterface.h"
 
 #ifdef MATHLIBRARY_EXPORTS
 #define MATHLIBRARY_API __declspec(dllexport)
@@ -34,7 +34,7 @@ extern "C" MATHLIBRARY_API unsigned long long fibonacci_current();
 // Get the position of the current value in the sequence.
 extern "C" MATHLIBRARY_API unsigned fibonacci_index();
 
-extern "C" MATHLIBRARY_API V10::Graphics* GetGraphics();
+extern "C" MATHLIBRARY_API V10::GraphicsInterface* GetGraphics();
 
 //StartEngine -> Tworzy graphics i odpala nowy w¹tek
 //

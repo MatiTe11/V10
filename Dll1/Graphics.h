@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "CommandList.h"
 #include "Camera.h"
+#include "GraphicsInterface.h"
 
 namespace V10
 {
@@ -12,7 +13,7 @@ namespace V10
 	class CubeGeometry;
 	class Model;
 
-	class Graphics
+	class Graphics : public GraphicsInterface
 	{
 	private:
 		static const int frameCount = 2;
@@ -43,9 +44,9 @@ namespace V10
 
 
 	public:
-		void Init(HWND hwnd);
+		void Init(HWND hwnd) override;
 
-		void Update();
+		void Update() override;
 		void RecordCL(ID3D12GraphicsCommandList* cl);
 		void Execute(CommandList* cl);
 

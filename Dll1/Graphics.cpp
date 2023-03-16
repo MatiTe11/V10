@@ -98,7 +98,7 @@ namespace V10
 		m_drawable->PushDrawableObject(m_backpack.get());
 		//m_drawable->PushDrawableObject(m_bricks.get());
 		m_camera = std::make_unique<Camera>();
-		m_inputManager = std::make_unique<InputManager>(new PCInputDevice()); //TODO:: mem leak
+		m_inputManager = std::make_unique<InputManager>(new XboxInputDevice()); //TODO:: mem leak //PC
 	}
 
 

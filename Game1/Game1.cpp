@@ -1,10 +1,13 @@
 // Game1.cpp : Defines the entry point for the application.
 //
 
-#include "stdafx.h"
+#include "stdafx2.h"
 #include "Game1.h"
 #include "MathLibrary.h"
 #include <iostream>
+#include <thread>
+
+bool g_quit = false;
 
 #define MAX_LOADSTRING 100
 
@@ -15,9 +18,17 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
+BOOL                InitInstance(HINSTANCE, int, HWND&);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+static void Up(V10::GraphicsInterface *g)
+{
+	while (!g_quit)
+	{
+		g->Update();
+	}
+}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -31,6 +42,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	 // Initialize a Fibonacci relation sequence.
 	fibonacci_init(1, 1);
+	
 	// Write out the sequence values until overflow.
 
 
@@ -40,24 +52,30 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     MyRegisterClass(hInstance);
 
     // Perform application initialization:
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
+	HWND hWnd;
+	if (!InitInstance(hInstance, nCmdShow, hWnd))
+	{
+		return FALSE;
+	}
+
+	auto gr = GetGraphics();
+	gr->Init(hWnd);
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME1));
 
-    MSG msg;
+	MSG msg;
+	std::thread t1(Up, gr);
+	// Main message loop:
+	while (!g_quit)
+	{
+		//graphics.Update();
+		GetMessage(&msg, nullptr, 0, 0);
 
-    // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-    }
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+
+	}
+	t1.join();
 
     return (int) msg.wParam;
 }
@@ -100,7 +118,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        In this function, we save the instance handle in a global variable and
 //        create and display the main program window.
 //
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, HWND &hwnd)
 {
    hInst = hInstance; // Store instance handle in our global variable
 
@@ -111,6 +129,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+   hwnd = hWnd;
+
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);

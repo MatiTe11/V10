@@ -177,6 +177,7 @@
     <ClInclude Include="DumbInputDevice.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="GraphicsInterface.h" />
     <ClInclude Include="IGameObject.h" />
     <ClInclude Include="IInputDevice.h" />
     <ClInclude Include="InputManager.h" />
