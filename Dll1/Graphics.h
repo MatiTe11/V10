@@ -23,18 +23,18 @@ namespace V10
 		ID3D12Device* m_device;
 		ID3D12DescriptorHeap* m_rtvDescHeap;
 		ID3D12Resource* m_backBuffer[frameCount];
-		ID3D12Resource* m_depthStencilBuffer; // This is the memory for our depth buffer. it will also be used for a stencil buffer in a later tutorial
-		ID3D12DescriptorHeap* m_dsDescriptorHeap; // This is a heap for our depth/stencil buffer descriptor
+		ID3D12Resource* m_depthStencilBuffer;
+		ID3D12DescriptorHeap* m_dsDescriptorHeap;
 		int m_currentBackBuffer;
 
 		std::unique_ptr<CommandQueue> m_commandQueue;
 		std::unique_ptr<CommandAllocatorPool> m_allocatorPool;
 		std::unique_ptr<CommandListPool> m_commandListPool;
-		std::unique_ptr<CubeGeometry> m_firstObj;
+		/*std::unique_ptr<CubeGeometry> m_firstObj;
 		std::unique_ptr<CubeGeometry> m_grass;
 		std::unique_ptr<CubeGeometry> m_bricks;
 		std::unique_ptr<Model> m_dragon;
-		std::unique_ptr<Model> m_backpack;
+		std::unique_ptr<Model> m_backpack;*/
 		std::unique_ptr<Drawable> m_drawable;
 		std::unique_ptr<Camera> m_camera;
 		std::unique_ptr<InputManager> m_inputManager;
@@ -45,8 +45,9 @@ namespace V10
 
 	public:
 		void Init(HWND hwnd) override;
-
 		void Update() override;
+		std::shared_ptr<ModelInterface> CreateModel(std::string model_name) override;
+
 		void RecordCL(ID3D12GraphicsCommandList* cl);
 		void Execute(CommandList* cl);
 

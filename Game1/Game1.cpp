@@ -60,6 +60,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	auto gr = GetGraphics();
 	gr->Init(hWnd);
+    auto dragon = gr->CreateModel("dragon");
+    dragon->Move(DirectX::XMVectorSet(0, -1, 5, 1));
+    auto backpack = gr->CreateModel("backpack");
+    backpack->Move(DirectX::XMVectorSet(0, 0, -10, 1));
+
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME1));
 
@@ -163,6 +168,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
+                g_quit = true;
                 break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
@@ -178,6 +184,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+        g_quit = true;
         PostQuitMessage(0);
         break;
     default:

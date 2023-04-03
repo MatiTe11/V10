@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.902
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "V10", "V10\V10.vcxproj", "{256A1F68-36DB-4337-917F-E3BF7BCFC1E7}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dll1", "Dll1\Dll1.vcxproj", "{4D8A91A0-E542-4586-91DF-33451699EFD5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game1", "Game1\Game1.vcxproj", "{D1EF82D4-7E22-4538-88AC-F9719D0CDF7D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4D8A91A0-E542-4586-91DF-33451699EFD5} = {4D8A91A0-E542-4586-91DF-33451699EFD5}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,14 +18,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{256A1F68-36DB-4337-917F-E3BF7BCFC1E7}.Debug|x64.ActiveCfg = Debug|x64
-		{256A1F68-36DB-4337-917F-E3BF7BCFC1E7}.Debug|x64.Build.0 = Debug|x64
-		{256A1F68-36DB-4337-917F-E3BF7BCFC1E7}.Debug|x86.ActiveCfg = Debug|Win32
-		{256A1F68-36DB-4337-917F-E3BF7BCFC1E7}.Debug|x86.Build.0 = Debug|Win32
-		{256A1F68-36DB-4337-917F-E3BF7BCFC1E7}.Release|x64.ActiveCfg = Release|x64
-		{256A1F68-36DB-4337-917F-E3BF7BCFC1E7}.Release|x64.Build.0 = Release|x64
-		{256A1F68-36DB-4337-917F-E3BF7BCFC1E7}.Release|x86.ActiveCfg = Release|Win32
-		{256A1F68-36DB-4337-917F-E3BF7BCFC1E7}.Release|x86.Build.0 = Release|Win32
 		{4D8A91A0-E542-4586-91DF-33451699EFD5}.Debug|x64.ActiveCfg = Debug|x64
 		{4D8A91A0-E542-4586-91DF-33451699EFD5}.Debug|x64.Build.0 = Debug|x64
 		{4D8A91A0-E542-4586-91DF-33451699EFD5}.Debug|x86.ActiveCfg = Debug|Win32

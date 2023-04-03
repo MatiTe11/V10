@@ -18,7 +18,7 @@ namespace V10
 	{
 	}
 
-	void Drawable::PushDrawableObject(ISimpleShadingObject* obj)
+	void Drawable::PushDrawableObject(std::shared_ptr<ISimpleShadingObject> obj)
 	{
 		m_drawableObjects.push_back(obj);
 	}

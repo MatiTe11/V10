@@ -14,13 +14,13 @@ namespace V10
 		Graphics& m_graphics;
 		ID3D12RootSignature* m_rootSignature;
 		ID3D12PipelineState* m_pso;
-		std::vector<ISimpleShadingObject*> m_drawableObjects;
+		std::vector<std::shared_ptr<ISimpleShadingObject>> m_drawableObjects;
 
 	public:
 		Drawable(Graphics& graphics);
 		~Drawable();
 
-		void PushDrawableObject(ISimpleShadingObject* obj);
+		void PushDrawableObject(std::shared_ptr<ISimpleShadingObject> obj);
 		void Draw(ID3D12GraphicsCommandList* commandlist, Camera* cam);
 		void Update(float elapsedSeconds);
 

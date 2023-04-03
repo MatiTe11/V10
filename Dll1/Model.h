@@ -2,6 +2,7 @@
 
 #include "Graphics.h"
 #include "ISimpleShadingObject.h"
+#include "ModelInterface.h"
 
 namespace V10
 {
@@ -10,7 +11,7 @@ namespace V10
     class Mesh;
     class Texture2D;
 
-    class Model : public ISimpleShadingObject
+    class Model : public ModelInterface, public ISimpleShadingObject
     {
     private:
         Graphics& m_graphics;
@@ -25,7 +26,7 @@ namespace V10
         ~Model();
 
         void Update(double elapsedSeconds);
-        void Move(DirectX::XMVECTOR translation);
+        void Move(DirectX::XMVECTOR translation) override;
 
         void Draw(ID3D12GraphicsCommandList* cl);
         virtual DirectX::XMMATRIX GetModelMatrix() override;

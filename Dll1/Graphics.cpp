@@ -81,21 +81,21 @@ namespace V10
 		//END Depth Stencil
 
 		m_drawable = std::make_unique<Drawable>(*this);
-		m_firstObj = std::make_unique<CubeGeometry>(*this, "wood.jpg");
+		/*m_firstObj = std::make_unique<CubeGeometry>(*this, "wood.jpg");
 		m_firstObj->Move(DirectX::XMVectorSet(2, 0, -4, 1));
 		m_grass = std::make_unique<CubeGeometry>(*this);
 		m_grass->Move(DirectX::XMVectorSet(-2, 0, 2, 1));
-		m_bricks = std::make_unique<CubeGeometry>(*this, "brickTex.jpg", "brickNormal.jpg");
-		m_bricks->Move(DirectX::XMVectorSet(0, 0, -4, 1));
-		m_dragon = std::make_unique<Model>(*this, "dragon");
+		m_bricks = std::make_unique<CubeGeometry>(*this, "brickTex.jpg", "brickNormal.jpg");*/
+		//m_bricks->Move(DirectX::XMVectorSet(0, 0, -4, 1));
+		/*m_dragon = std::make_unique<Model>(*this, "dragon");
 		m_dragon->Move(DirectX::XMVectorSet(0, -1, 5, 1));
 		m_backpack = std::make_unique<Model>(*this, "backpack");
-		m_backpack->Move(DirectX::XMVectorSet(0, 0, -10, 1));
+		m_backpack->Move(DirectX::XMVectorSet(0, 0, -10, 1));*/
 
 		//m_drawable->PushDrawableObject(m_firstObj.get());
 		//m_drawable->PushDrawableObject(m_grass.get());
-		m_drawable->PushDrawableObject(m_dragon.get());
-		m_drawable->PushDrawableObject(m_backpack.get());
+		//m_drawable->PushDrawableObject(m_dragon.get());
+		//m_drawable->PushDrawableObject(m_backpack.get());
 		//m_drawable->PushDrawableObject(m_bricks.get());
 		m_camera = std::make_unique<Camera>();
 		m_inputManager = std::make_unique<InputManager>(new XboxInputDevice()); //TODO:: mem leak //PC
@@ -106,7 +106,7 @@ namespace V10
 	{
 		static int cnt = 0;
 		cnt++;
-		m_firstObj->Update(cnt);
+		//m_firstObj->Update(cnt);
 		m_inputManager->Update(1);
 		m_camera->Update(m_inputManager.get());
 
@@ -117,6 +117,14 @@ namespace V10
 		m_commandQueue->Sync();
 		m_currentBackBuffer++;
 		m_currentBackBuffer = m_currentBackBuffer % 2;
+	}
+
+	std::shared_ptr<ModelInterface> Graphics::CreateModel(std::string model_name)
+	{
+		auto ret = std::make_shared<Model>(*this, model_name);
+		m_drawable->PushDrawableObject(ret);
+		return ret;
+
 	}
 
 	void Graphics::RecordCL(ID3D12GraphicsCommandList* cl)
