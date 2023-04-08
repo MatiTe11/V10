@@ -4,6 +4,7 @@
 #include "stdafx2.h"
 #include "Game1.h"
 #include "MathLibrary.h"
+#include "CarGame.h"
 #include <iostream>
 #include <thread>
 
@@ -60,20 +61,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	auto gr = GetGraphics();
 	gr->Init(hWnd);
-    auto dragon = gr->CreateModel("dragon");
-    dragon->Move(DirectX::XMVectorSet(0, -1, 5, 1));
-    auto backpack = gr->CreateModel("backpack");
-    backpack->Move(DirectX::XMVectorSet(0, 0, -10, 1));
-
-
+    CarGame game(gr);
+   
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME1));
 
 	MSG msg;
-	std::thread t1(Up, gr);
+    std::thread t1([&game]() {while (!g_quit)
+    {
+        game.Update(0);
+    }});
 	// Main message loop:
 	while (!g_quit)
 	{
-		//graphics.Update();
 		GetMessage(&msg, nullptr, 0, 0);
 
 		TranslateMessage(&msg);

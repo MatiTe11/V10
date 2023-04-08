@@ -27,12 +27,18 @@
     <ClInclude Include="stdafx2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CarGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CarGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
