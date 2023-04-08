@@ -80,23 +80,11 @@ namespace V10
 		m_device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilDesc, m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		//END Depth Stencil
 
-		m_drawable = std::make_unique<Drawable>(*this);
-		/*m_firstObj = std::make_unique<CubeGeometry>(*this, "wood.jpg");
-		m_firstObj->Move(DirectX::XMVectorSet(2, 0, -4, 1));
-		m_grass = std::make_unique<CubeGeometry>(*this);
-		m_grass->Move(DirectX::XMVectorSet(-2, 0, 2, 1));
-		m_bricks = std::make_unique<CubeGeometry>(*this, "brickTex.jpg", "brickNormal.jpg");*/
-		//m_bricks->Move(DirectX::XMVectorSet(0, 0, -4, 1));
-		/*m_dragon = std::make_unique<Model>(*this, "dragon");
-		m_dragon->Move(DirectX::XMVectorSet(0, -1, 5, 1));
-		m_backpack = std::make_unique<Model>(*this, "backpack");
-		m_backpack->Move(DirectX::XMVectorSet(0, 0, -10, 1));*/
 
-		//m_drawable->PushDrawableObject(m_firstObj.get());
-		//m_drawable->PushDrawableObject(m_grass.get());
-		//m_drawable->PushDrawableObject(m_dragon.get());
-		//m_drawable->PushDrawableObject(m_backpack.get());
-		//m_drawable->PushDrawableObject(m_bricks.get());
+
+		m_drawExecNormalMap = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShader.cso" },DrawExecutor::GetRootParamsForNormalMap());
+		m_drawExecNoNormal = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShaderWoNormalMap.cso" },DrawExecutor::GetRootParamsNoNormalMap());
+		
 		m_camera = std::make_unique<Camera>();
 		m_inputManager = std::make_unique<InputManager>(new XboxInputDevice()); //TODO:: mem leak //PC
 	}
@@ -121,8 +109,15 @@ namespace V10
 
 	std::shared_ptr<ModelInterface> Graphics::CreateModel(std::string model_name)
 	{
+		
 		auto ret = std::make_shared<Model>(*this, model_name);
-		m_drawable->PushDrawableObject(ret);
+		auto path = std::filesystem::current_path();
+		path /= model_name + "Normal.png";
+		if (std::filesystem::exists(path))
+			m_drawExecNormalMap->PushDrawableObject(ret);
+		else
+			m_drawExecNoNormal->PushDrawableObject(ret);
+
 		return ret;
 
 	}
@@ -157,7 +152,8 @@ namespace V10
 
 		cl->RSSetScissorRects(1, &scissorRect);
 		cl->RSSetViewports(1, &viewport);
-		m_drawable->Draw(cl, m_camera.get());
+		m_drawExecNormalMap->Draw(cl, m_camera.get());
+		m_drawExecNoNormal->Draw(cl, m_camera.get());
 		barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);
 		cl->ResourceBarrier(1, &barrier);
 		cl->Close();

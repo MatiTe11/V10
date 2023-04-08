@@ -7,23 +7,23 @@
 
 namespace V10
 {
-	Drawable::Drawable(Graphics& graphics)
+	DrawExecutor::DrawExecutor(Graphics& graphics, Shaders shaders, std::vector<D3D12_ROOT_PARAMETER> rootParams)
 		:m_graphics(graphics)
 	{
-		CreateRootSig();
-		CreatePSO();
+		CreateRootSig(rootParams);
+		CreatePSO(shaders);
 	}
 
-	Drawable::~Drawable()
+	DrawExecutor::~DrawExecutor()
 	{
 	}
 
-	void Drawable::PushDrawableObject(std::shared_ptr<ISimpleShadingObject> obj)
+	void DrawExecutor::PushDrawableObject(std::shared_ptr<ISimpleShadingObject> obj)
 	{
 		m_drawableObjects.push_back(obj);
 	}
 
-	void Drawable::Draw(ID3D12GraphicsCommandList* cl, Camera* cam)
+	void DrawExecutor::Draw(ID3D12GraphicsCommandList* cl, Camera* cam)
 	{
 		cl->SetPipelineState(m_pso);
 		cl->SetGraphicsRootSignature(m_rootSignature);
@@ -46,66 +46,122 @@ namespace V10
 		}
 	}
 
-	void Drawable::Update(float elapsedSeconds)
+	void DrawExecutor::Update(float elapsedSeconds)
 	{
 		/*const DirectX::XMVECTOR rotationAxis = DirectX::XMVectorSet(0, 1, 1, 1);
 		m_modelMat = DirectX::XMMatrixRotationAxis(rotationAxis, DirectX::XMConvertToRadians(0));*/
 	}
 
-	void Drawable::CreateRootSig()
+	std::vector<D3D12_ROOT_PARAMETER> DrawExecutor::GetRootParamsForNormalMap()
 	{
-		ID3DBlob* rootBlob;
-		ID3DBlob* errorBlob;
-
-		D3D12_ROOT_PARAMETER rootParam[5];
+		std::vector<D3D12_ROOT_PARAMETER> rootParams(5);
 
 		D3D12_ROOT_CONSTANTS modelRC{ 0 };
 		modelRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
 		modelRC.RegisterSpace = 0;
 		modelRC.ShaderRegister = 0;
-		rootParam[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParam[0].Constants = modelRC;
-		rootParam[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		rootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[0].Constants = modelRC;
+		rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_ROOT_CONSTANTS viewProjRC{ 0 };
 		viewProjRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
 		viewProjRC.RegisterSpace = 0;
 		viewProjRC.ShaderRegister = 1;
-		rootParam[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParam[1].Constants = viewProjRC;
-		rootParam[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[1].Constants = viewProjRC;
+		rootParams[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_ROOT_CONSTANTS materialRC{ 0 };
 		materialRC.Num32BitValues = sizeof(Material) / 4;
 		materialRC.RegisterSpace = 0;
 		materialRC.ShaderRegister = 2;
-		rootParam[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParam[2].Constants = materialRC;
-		rootParam[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		rootParams[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[2].Constants = materialRC;
+		rootParams[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_ROOT_CONSTANTS camPosRC{ 0 };
 		camPosRC.Num32BitValues = sizeof(DirectX::XMVECTOR) / 4;
 		camPosRC.RegisterSpace = 0;
 		camPosRC.ShaderRegister = 3;
-		rootParam[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParam[3].Constants = camPosRC;
-		rootParam[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		rootParams[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[3].Constants = camPosRC;
+		rootParams[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-		D3D12_DESCRIPTOR_RANGE  descriptorTableRanges[1]; // only one range right now
-		descriptorTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // this is a range of shader resource views (descriptors)
-		descriptorTableRanges[0].NumDescriptors = 2; // we only have one texture right now, so the range is only 1
-		descriptorTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
-		descriptorTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
-		descriptorTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+		D3D12_DESCRIPTOR_RANGE* descriptorTableRange = new D3D12_DESCRIPTOR_RANGE;
+		descriptorTableRange->RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		descriptorTableRange->NumDescriptors = 2;
+		descriptorTableRange->BaseShaderRegister = 0;
+		descriptorTableRange->RegisterSpace = 0;
+		descriptorTableRange->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 		D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
-		descriptorTable.NumDescriptorRanges = _countof(descriptorTableRanges);
-		descriptorTable.pDescriptorRanges = &descriptorTableRanges[0];
-		rootParam[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
-		rootParam[4].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
-		rootParam[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
+		descriptorTable.NumDescriptorRanges = 1;
+		descriptorTable.pDescriptorRanges = descriptorTableRange;
+		rootParams[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		rootParams[4].DescriptorTable = descriptorTable;
+		rootParams[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+		return rootParams;
 
-		// create a static sampler
+	}
+
+	std::vector<D3D12_ROOT_PARAMETER> DrawExecutor::GetRootParamsNoNormalMap()
+	{
+		std::vector<D3D12_ROOT_PARAMETER> rootParams(5);
+
+		D3D12_ROOT_CONSTANTS modelRC{ 0 };
+		modelRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
+		modelRC.RegisterSpace = 0;
+		modelRC.ShaderRegister = 0;
+		rootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[0].Constants = modelRC;
+		rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+		D3D12_ROOT_CONSTANTS viewProjRC{ 0 };
+		viewProjRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
+		viewProjRC.RegisterSpace = 0;
+		viewProjRC.ShaderRegister = 1;
+		rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[1].Constants = viewProjRC;
+		rootParams[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+		D3D12_ROOT_CONSTANTS materialRC{ 0 };
+		materialRC.Num32BitValues = sizeof(Material) / 4;
+		materialRC.RegisterSpace = 0;
+		materialRC.ShaderRegister = 2;
+		rootParams[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[2].Constants = materialRC;
+		rootParams[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+		D3D12_ROOT_CONSTANTS camPosRC{ 0 };
+		camPosRC.Num32BitValues = sizeof(DirectX::XMVECTOR) / 4;
+		camPosRC.RegisterSpace = 0;
+		camPosRC.ShaderRegister = 3;
+		rootParams[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[3].Constants = camPosRC;
+		rootParams[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+		D3D12_DESCRIPTOR_RANGE* descriptorTableRange = new D3D12_DESCRIPTOR_RANGE;
+		descriptorTableRange->RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		descriptorTableRange->NumDescriptors = 2;
+		descriptorTableRange->BaseShaderRegister = 0;
+		descriptorTableRange->RegisterSpace = 0;
+		descriptorTableRange->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+		D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
+		descriptorTable.NumDescriptorRanges = 1;
+		descriptorTable.pDescriptorRanges = descriptorTableRange;
+		rootParams[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		rootParams[4].DescriptorTable = descriptorTable;
+		rootParams[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+		return rootParams;
+	}
+
+	void DrawExecutor::CreateRootSig(std::vector<D3D12_ROOT_PARAMETER> rootParams)
+	{
+		ID3DBlob* rootBlob;
+		ID3DBlob* errorBlob;
+
 		D3D12_STATIC_SAMPLER_DESC sampler = {};
 		sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
 		sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -121,10 +177,10 @@ namespace V10
 		sampler.RegisterSpace = 0;
 		sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
-		D3D12_ROOT_SIGNATURE_DESC rootDesc{ 0 };
+		D3D12_ROOT_SIGNATURE_DESC rootDesc{0};
 		rootDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-		rootDesc.NumParameters = 5;
-		rootDesc.pParameters = rootParam;
+		rootDesc.NumParameters = rootParams.size();
+		rootDesc.pParameters = rootParams.data();
 		rootDesc.pStaticSamplers = &sampler;
 		rootDesc.NumStaticSamplers = 1;
 		D3D12SerializeRootSignature(&rootDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &rootBlob, &errorBlob);
@@ -132,10 +188,10 @@ namespace V10
 		rootBlob->Release();
 	}
 
-	void Drawable::CreatePSO()
+	void DrawExecutor::CreatePSO(DrawExecutor::Shaders shaders)
 	{
 		auto path = std::filesystem::current_path();
-		path /= "VertexShader.cso";
+		path /= shaders.vertexShader;
 		std::ifstream compiledShader;
 		compiledShader.open(path.c_str(), std::ifstream::in | std::ifstream::binary);
 		auto a = compiledShader.is_open();
@@ -151,7 +207,7 @@ namespace V10
 		VSbytecode.pShaderBytecode = VSbuffer;
 		VSbytecode.BytecodeLength = length;
 		path = std::filesystem::current_path();
-		path /= "PixelShader.cso";
+		path /= shaders.pixelShader;
 		compiledShader.open(path.c_str(), std::ifstream::in | std::ifstream::binary);
 		char* PSbuffer;
 		compiledShader.seekg(0, std::ios::end);
@@ -176,7 +232,7 @@ namespace V10
 		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 		psoDesc.SampleDesc = { 1,0 };
 		psoDesc.SampleMask = 0xffffffff;
-		psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // a default depth stencil state
+		psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 		m_graphics.GetDevice()->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pso));
 	}
 }

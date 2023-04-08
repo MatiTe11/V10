@@ -25,7 +25,11 @@ namespace V10
 
 		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 2);
 		m_Textures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), diffusePath);
-		m_NormalTextures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), normalPath);
+		auto path = std::filesystem::current_path();
+		path /= normalPath;
+		if(std::filesystem::exists(path))
+			m_NormalTextures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), normalPath);
+
 	}
 
 	Model::~Model()
@@ -34,7 +38,7 @@ namespace V10
 
 	void Model::Update(double elapsedSeconds)
 	{
-		const DirectX::XMVECTOR rotationAxis = DirectX::XMVectorSet(0, 1, 1, 1);
+		//const DirectX::XMVECTOR rotationAxis = DirectX::XMVectorSet(0, 1, 1, 1);
 		//m_modelMat = DirectX::XMMatrixRotationAxis(rotationAxis, DirectX::XMConvertToRadians(0));
 	}
 	void Model::Move(DirectX::XMVECTOR translation)
