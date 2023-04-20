@@ -87,6 +87,8 @@ namespace V10
 		
 		m_camera = std::make_unique<Camera>();
 		m_inputManager = std::make_unique<InputManager>(new XboxInputDevice()); //TODO:: mem leak //PC
+		m_camera->Update(m_inputManager.get());
+
 	}
 
 
@@ -120,6 +122,12 @@ namespace V10
 
 		return ret;
 
+	}
+
+	std::shared_ptr<InputInterface> Graphics::GetInputInterface()
+	{
+		auto ret = std::make_shared<XboxInputDevice>();
+		return ret;
 	}
 
 	void Graphics::RecordCL(ID3D12GraphicsCommandList* cl)

@@ -1,10 +1,11 @@
 #pragma once
 #include "IInputDevice.h"
+#include "InputInterface.h"
 
 namespace V10
 {
 	class XboxInputDevice :
-		public IInputDevice
+		public InputInterface, public IInputDevice
 	{
 	private:
 		bool m_connectedControllers[XUSER_MAX_COUNT];
@@ -17,6 +18,9 @@ namespace V10
 		virtual double ZAxisMovement() override;
 		virtual double YawOffset() override;
 		virtual double PitchOffset() override;
+
+		// Inherited via InputInterface
+		virtual bool isKeyPressed(Button b) override;
 	};
 
 }

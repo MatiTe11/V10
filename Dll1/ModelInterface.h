@@ -10,7 +10,9 @@ namespace V10
 
     public:
 
+        virtual void ResetTransform() = 0;
         virtual void Move(DirectX::XMVECTOR translation) = 0;
+        virtual void Rotate(DirectX::FXMVECTOR axis, float angle) = 0;
 
     };
 }

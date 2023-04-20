@@ -152,6 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Car.h" />
     <ClInclude Include="CarGame.h" />
     <ClInclude Include="Game1.h" />
     <ClInclude Include="Resource.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Car.cpp" />
     <ClCompile Include="CarGame.cpp" />
     <ClCompile Include="Game1.cpp" />
     <ClCompile Include="stdafx.cpp">

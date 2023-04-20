@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include "ModelInterface.h"
+#include "InputInterface.h"
 
 
 namespace V10
@@ -18,6 +19,7 @@ namespace V10
 		virtual void Init(HWND hwnd) = 0;
 		virtual void Update() = 0;
 		virtual std::shared_ptr<ModelInterface> CreateModel(std::string model_name) = 0;
+		virtual std::shared_ptr<InputInterface> GetInputInterface() = 0;
 
 	};
 

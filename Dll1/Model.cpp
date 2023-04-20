@@ -41,13 +41,24 @@ namespace V10
 		//const DirectX::XMVECTOR rotationAxis = DirectX::XMVectorSet(0, 1, 1, 1);
 		//m_modelMat = DirectX::XMMatrixRotationAxis(rotationAxis, DirectX::XMConvertToRadians(0));
 	}
+	void Model::ResetTransform()
+	{
+		auto vec = DirectX::XMVectorSet(0, 0, 0, 1);
+		m_modelMat = DirectX::XMMatrixTranslationFromVector(vec);
+	}
 	void Model::Move(DirectX::XMVECTOR translation)
 	{
-		m_modelMat = DirectX::XMMatrixTranslationFromVector(translation);
+		//m_modelMat = DirectX::XMMatrixTranslationFromVector(translation);
+
+		m_modelMat = DirectX::XMMatrixMultiply(m_modelMat, DirectX::XMMatrixTranslationFromVector(translation));
+	}
+	void Model::Rotate(DirectX::FXMVECTOR axis, float angle)
+	{
+		m_modelMat = DirectX::XMMatrixMultiply(m_modelMat, DirectX::XMMatrixRotationNormal(axis, angle));
 	}
 	void Model::Draw(ID3D12GraphicsCommandList* cl)
 	{
-		for(auto mesh : m_Meshes)
+		for(auto& mesh : m_Meshes)
 			mesh.Draw(cl);
 	}
 	DirectX::XMMATRIX Model::GetModelMatrix()

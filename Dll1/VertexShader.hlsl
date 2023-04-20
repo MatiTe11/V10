@@ -37,7 +37,9 @@ VertexShaderOutput main(VertexShaderInput IN)
 	VertexShaderOutput OUT;
 	OUT.texCoord = IN.texCoord;
 	OUT.normal = IN.normal;
+	//OUT.normal = mul(ModelCB.model, float4(IN.position, 1.0f));
 	OUT.position = mul(ModelCB.model, float4(IN.position, 1.0f));
+	OUT.normal = mul(ModelCB.model, float4(IN.normal, 1.0f));
 	OUT.positionSV = mul(vpCB.vp, OUT.position);
 	OUT.TBN = TBN;
 

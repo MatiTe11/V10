@@ -38,4 +38,5 @@ namespace V10
 		//cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		//DirectX::XMVectorScale( m_CameraFront, m_inputDev->XAxisMovement());
 	}
+
 }

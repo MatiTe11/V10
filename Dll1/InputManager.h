@@ -1,5 +1,6 @@
 #pragma once
 #include "IInputDevice.h"
+#include "InputInterface.h"
 
 namespace V10
 {
@@ -22,6 +23,8 @@ namespace V10
 		void Update(float elapsedSeconds);
 		const DirectX::XMVECTOR& GetPosition() { return m_Position; }
 		const DirectX::XMVECTOR& GetCameraFront() { return m_CameraFront; }
+
+
 
 	};
 

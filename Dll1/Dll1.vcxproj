@@ -168,6 +168,7 @@
     <ClInclude Include="GraphicsInterface.h" />
     <ClInclude Include="IGameObject.h" />
     <ClInclude Include="IInputDevice.h" />
+    <ClInclude Include="InputInterface.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="ISimpleShadingObject.h" />
     <ClInclude Include="Mesh.h" />

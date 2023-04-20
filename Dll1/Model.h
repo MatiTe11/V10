@@ -26,7 +26,10 @@ namespace V10
         ~Model();
 
         void Update(double elapsedSeconds);
+        void ResetTransform() override;
         void Move(DirectX::XMVECTOR translation) override;
+        void Rotate(DirectX::FXMVECTOR axis, float angle) override;
+
 
         void Draw(ID3D12GraphicsCommandList* cl);
         virtual DirectX::XMMATRIX GetModelMatrix() override;

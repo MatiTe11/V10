@@ -73,4 +73,39 @@ namespace V10
 	{
 		return 0.0;
 	}
+	bool XboxInputDevice::isKeyPressed(Button b)
+	{
+		auto dwResult = XInputGetState(0, &m_controllerState[0]);
+
+		switch (b)
+		{
+		case V10::Button::UP:
+			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
+				return true;
+		case V10::Button::DOWN:
+			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
+		return true;
+		case V10::Button::LEFT:
+			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
+				return true;
+		case V10::Button::RIGHT:
+			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
+				return true;
+		case V10::Button::X:
+			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_X)
+				return true;
+		case V10::Button::Y:
+			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_Y)
+				return true;
+		case V10::Button::A:
+			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_A)
+				return true;
+		case V10::Button::B:
+			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_B)
+				return true;
+		default:
+			return false;
+		}
+		return false;
+	}
 }
