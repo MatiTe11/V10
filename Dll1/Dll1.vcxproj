@@ -160,7 +160,7 @@
     <ClInclude Include="CubeGeometry.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DescriptorHeap.h" />
-    <ClInclude Include="Drawable.h" />
+    <ClInclude Include="DrawExecutor.h" />
     <ClInclude Include="DumbInputDevice.h" />
     <ClInclude Include="ExportedHeaders\MathLibrary.h" />
     <ClInclude Include="Game.h" />
@@ -192,7 +192,7 @@
     <ClCompile Include="DescriptorHeap.cpp" />
     <ClCompile Include="Dll1.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Drawable.cpp" />
+    <ClCompile Include="DrawExecutor.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MathLibrary.cpp" />
