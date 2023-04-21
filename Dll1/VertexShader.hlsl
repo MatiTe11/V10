@@ -2,13 +2,17 @@ struct ModelMatrix
 {
 	matrix model;
 };
-
+struct NormalMatrix
+{
+	float3x3 normal;
+};
 struct ViewProjectionMatrix
 {
 	matrix vp;
 };
 ConstantBuffer<ModelMatrix> ModelCB : register(b0);
-ConstantBuffer<ViewProjectionMatrix> vpCB : register(b1);
+ConstantBuffer<NormalMatrix> NormalCB : register(b1);
+ConstantBuffer<ViewProjectionMatrix> vpCB : register(b2);
 
 struct VertexShaderInput
 {
@@ -39,7 +43,8 @@ VertexShaderOutput main(VertexShaderInput IN)
 	OUT.normal = IN.normal;
 	//OUT.normal = mul(ModelCB.model, float4(IN.position, 1.0f));
 	OUT.position = mul(ModelCB.model, float4(IN.position, 1.0f));
-	OUT.normal = mul(ModelCB.model, float4(IN.normal, 1.0f));
+	//OUT.normal = mul(ModelCB.model, float4(IN.normal, 1.0f));
+	OUT.normal = mul(NormalCB.normal, IN.normal);
 	OUT.positionSV = mul(vpCB.vp, OUT.position);
 	OUT.TBN = TBN;
 

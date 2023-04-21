@@ -33,15 +33,17 @@ namespace V10
 		for (int i = 0; i < m_drawableObjects.size(); i++)
 		{
 			auto modelMat = m_drawableObjects[i]->GetModelMatrix();
+			auto normalMat = m_drawableObjects[i]->GetNormalMatrix();
 			auto vpMat =  cam->GetVPmatrix();
 			auto camPos = cam->GetPosition();
 			cl->SetGraphicsRoot32BitConstants(0, sizeof(DirectX::XMMATRIX) / 4, &modelMat, 0);
-			cl->SetGraphicsRoot32BitConstants(1, sizeof(DirectX::XMMATRIX) / 4, &vpMat, 0);
-			cl->SetGraphicsRoot32BitConstants(2, sizeof(Material) / 4, &material, 0);
-			cl->SetGraphicsRoot32BitConstants(3, sizeof(DirectX::XMVECTOR) / 4, &camPos, 0);
+			cl->SetGraphicsRoot32BitConstants(1, sizeof(DirectX::XMFLOAT3X3) / 4, &normalMat, 0);
+			cl->SetGraphicsRoot32BitConstants(2, sizeof(DirectX::XMMATRIX) / 4, &vpMat, 0);
+			cl->SetGraphicsRoot32BitConstants(3, sizeof(Material) / 4, &material, 0);
+			cl->SetGraphicsRoot32BitConstants(4, sizeof(DirectX::XMVECTOR) / 4, &camPos, 0);
 			auto desc = m_drawableObjects[i]->GetTextureDescriptor();
 			cl->SetDescriptorHeaps(1, &desc.descHeap);
-			cl->SetGraphicsRootDescriptorTable(4, desc.gpuHandle);
+			cl->SetGraphicsRootDescriptorTable(5, desc.gpuHandle);
 			m_drawableObjects[i]->Draw(cl);
 		}
 	}
@@ -54,7 +56,7 @@ namespace V10
 
 	std::vector<D3D12_ROOT_PARAMETER> DrawExecutor::GetRootParamsForNormalMap()
 	{
-		std::vector<D3D12_ROOT_PARAMETER> rootParams(5);
+		std::vector<D3D12_ROOT_PARAMETER> rootParams(6);
 
 		D3D12_ROOT_CONSTANTS modelRC{ 0 };
 		modelRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
@@ -64,29 +66,37 @@ namespace V10
 		rootParams[0].Constants = modelRC;
 		rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+		D3D12_ROOT_CONSTANTS normalRC{ 0 };
+		normalRC.Num32BitValues = sizeof(DirectX::XMFLOAT3X3) / 4;
+		normalRC.RegisterSpace = 0;
+		normalRC.ShaderRegister = 1;
+		rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[1].Constants = normalRC;
+		rootParams[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
 		D3D12_ROOT_CONSTANTS viewProjRC{ 0 };
 		viewProjRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
 		viewProjRC.RegisterSpace = 0;
-		viewProjRC.ShaderRegister = 1;
-		rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParams[1].Constants = viewProjRC;
-		rootParams[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		viewProjRC.ShaderRegister = 2;
+		rootParams[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[2].Constants = viewProjRC;
+		rootParams[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_ROOT_CONSTANTS materialRC{ 0 };
 		materialRC.Num32BitValues = sizeof(Material) / 4;
 		materialRC.RegisterSpace = 0;
-		materialRC.ShaderRegister = 2;
-		rootParams[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParams[2].Constants = materialRC;
-		rootParams[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		materialRC.ShaderRegister = 3;
+		rootParams[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[3].Constants = materialRC;
+		rootParams[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_ROOT_CONSTANTS camPosRC{ 0 };
 		camPosRC.Num32BitValues = sizeof(DirectX::XMVECTOR) / 4;
 		camPosRC.RegisterSpace = 0;
-		camPosRC.ShaderRegister = 3;
-		rootParams[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParams[3].Constants = camPosRC;
-		rootParams[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		camPosRC.ShaderRegister = 4;
+		rootParams[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[4].Constants = camPosRC;
+		rootParams[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_DESCRIPTOR_RANGE* descriptorTableRange = new D3D12_DESCRIPTOR_RANGE;
 		descriptorTableRange->RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
@@ -97,9 +107,9 @@ namespace V10
 		D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
 		descriptorTable.NumDescriptorRanges = 1;
 		descriptorTable.pDescriptorRanges = descriptorTableRange;
-		rootParams[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		rootParams[4].DescriptorTable = descriptorTable;
-		rootParams[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+		rootParams[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		rootParams[5].DescriptorTable = descriptorTable;
+		rootParams[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 		return rootParams;
 
@@ -107,7 +117,7 @@ namespace V10
 
 	std::vector<D3D12_ROOT_PARAMETER> DrawExecutor::GetRootParamsNoNormalMap()
 	{
-		std::vector<D3D12_ROOT_PARAMETER> rootParams(5);
+		std::vector<D3D12_ROOT_PARAMETER> rootParams(6);
 
 		D3D12_ROOT_CONSTANTS modelRC{ 0 };
 		modelRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
@@ -117,29 +127,37 @@ namespace V10
 		rootParams[0].Constants = modelRC;
 		rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+		D3D12_ROOT_CONSTANTS normalRC{ 0 };
+		normalRC.Num32BitValues = sizeof(DirectX::XMFLOAT3X3) / 4;
+		normalRC.RegisterSpace = 0;
+		normalRC.ShaderRegister = 1;
+		rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[1].Constants = normalRC;
+		rootParams[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
 		D3D12_ROOT_CONSTANTS viewProjRC{ 0 };
 		viewProjRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
 		viewProjRC.RegisterSpace = 0;
-		viewProjRC.ShaderRegister = 1;
-		rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParams[1].Constants = viewProjRC;
-		rootParams[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		viewProjRC.ShaderRegister = 2;
+		rootParams[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[2].Constants = viewProjRC;
+		rootParams[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_ROOT_CONSTANTS materialRC{ 0 };
 		materialRC.Num32BitValues = sizeof(Material) / 4;
 		materialRC.RegisterSpace = 0;
-		materialRC.ShaderRegister = 2;
-		rootParams[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParams[2].Constants = materialRC;
-		rootParams[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		materialRC.ShaderRegister = 3;
+		rootParams[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[3].Constants = materialRC;
+		rootParams[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_ROOT_CONSTANTS camPosRC{ 0 };
 		camPosRC.Num32BitValues = sizeof(DirectX::XMVECTOR) / 4;
 		camPosRC.RegisterSpace = 0;
-		camPosRC.ShaderRegister = 3;
-		rootParams[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		rootParams[3].Constants = camPosRC;
-		rootParams[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		camPosRC.ShaderRegister = 4;
+		rootParams[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+		rootParams[4].Constants = camPosRC;
+		rootParams[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_DESCRIPTOR_RANGE* descriptorTableRange = new D3D12_DESCRIPTOR_RANGE;
 		descriptorTableRange->RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
@@ -150,9 +168,9 @@ namespace V10
 		D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
 		descriptorTable.NumDescriptorRanges = 1;
 		descriptorTable.pDescriptorRanges = descriptorTableRange;
-		rootParams[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		rootParams[4].DescriptorTable = descriptorTable;
-		rootParams[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+		rootParams[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		rootParams[5].DescriptorTable = descriptorTable;
+		rootParams[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 		return rootParams;
 	}

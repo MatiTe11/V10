@@ -33,6 +33,7 @@ namespace V10
 
         void Draw(ID3D12GraphicsCommandList* cl);
         virtual DirectX::XMMATRIX GetModelMatrix() override;
+        virtual DirectX::XMFLOAT3X3 GetNormalMatrix() override;
         virtual DescLocation GetTextureDescriptor() override;
     private:
         void ProcessNode(aiNode* node, const aiScene* scene);

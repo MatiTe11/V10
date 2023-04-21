@@ -11,9 +11,12 @@ private:
 		double y;
 	} m_position;
 
+	double m_speed;
+	double m_rotation;
+
 	std::shared_ptr<V10::ModelInterface> m_carModel;
 	std::shared_ptr<V10::InputInterface> m_input;
-	DirectX::XMVECTOR m_vec = DirectX::XMVectorSet(0, 0, 0, 0);;
+	DirectX::XMVECTOR m_vec = DirectX::XMVectorSet(3, -1, 5, 1);;
 
 public:
 	Car(std::shared_ptr<V10::ModelInterface> carModel, std::shared_ptr<V10::InputInterface> input);

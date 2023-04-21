@@ -10,8 +10,8 @@ struct CamPos
     vector camPos;
 };
 
-ConstantBuffer<Material> MaterialCB : register(b2);
-ConstantBuffer<CamPos> CamPosCB : register(b3);
+ConstantBuffer<Material> MaterialCB : register(b3);
+ConstantBuffer<CamPos> CamPosCB : register(b4);
 
 Texture2D t1 : register(t0);
 Texture2D tNorm : register(t1);

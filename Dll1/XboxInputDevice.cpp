@@ -80,29 +80,21 @@ namespace V10
 		switch (b)
 		{
 		case V10::Button::UP:
-			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)
-				return true;
+			return (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP);
 		case V10::Button::DOWN:
-			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)
-		return true;
+			return (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN);
 		case V10::Button::LEFT:
-			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
-				return true;
+			return (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT);
 		case V10::Button::RIGHT:
-			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT)
-				return true;
+			return (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT);
 		case V10::Button::X:
-			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_X)
-				return true;
+			return (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_X);
 		case V10::Button::Y:
-			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_Y)
-				return true;
+			return (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_Y);
 		case V10::Button::A:
-			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_A)
-				return true;
+			return (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_A);
 		case V10::Button::B:
-			if (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_B)
-				return true;
+			return (m_controllerState[0].Gamepad.wButtons & XINPUT_GAMEPAD_B);
 		default:
 			return false;
 		}

@@ -98,7 +98,7 @@ namespace V10
 		cnt++;
 		//m_firstObj->Update(cnt);
 		m_inputManager->Update(1);
-		m_camera->Update(m_inputManager.get());
+		//m_camera->Update(m_inputManager.get());
 
 		CommandList* cl = GetCommandList();
 		RecordCL(cl->GetCommandList());

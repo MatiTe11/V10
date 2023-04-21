@@ -10,8 +10,8 @@ struct CamPos
     vector camPos;
 };
 
-ConstantBuffer<Material> MaterialCB : register(b2);
-ConstantBuffer<CamPos> CamPosCB : register(b3);
+ConstantBuffer<Material> MaterialCB : register(b3);
+ConstantBuffer<CamPos> CamPosCB : register(b4);
 
 Texture2D t1 : register(t0);
 SamplerState s1 : register(s0);
@@ -28,8 +28,8 @@ struct VS_OUTPUT
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
     float3 rgb_norm = input.normal;
-    //rgb_norm = normalize(rgb_norm * 2 - 1.0);
-    rgb_norm = normalize(mul(input.TBN, rgb_norm));
+    rgb_norm = normalize(rgb_norm);
+   // rgb_norm = normalize(mul(input.TBN, rgb_norm));
     input.normal = rgb_norm;
     //diffuse
     float3 lightDir = (-input.position);
