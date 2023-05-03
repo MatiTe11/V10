@@ -71,7 +71,7 @@ namespace V10
 		auto mat4 = XMMatrixTranspose(XMMatrixInverse(nullptr, m_modelMat));
 		return XMFLOAT3X3(XMVectorGetX(mat4.r[0]), XMVectorGetY(mat4.r[0]), XMVectorGetZ(mat4.r[0]),
 							XMVectorGetX(mat4.r[1]), XMVectorGetY(mat4.r[1]), XMVectorGetZ(mat4.r[1]),
-							XMVectorGetX(mat4.r[1]), XMVectorGetY(mat4.r[1]), XMVectorGetZ(mat4.r[1]));
+							XMVectorGetX(mat4.r[2]), XMVectorGetY(mat4.r[2]), XMVectorGetZ(mat4.r[2]));
 	}
 	DescLocation Model::GetTextureDescriptor()
 	{

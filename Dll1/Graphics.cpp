@@ -10,6 +10,7 @@
 #include "CubeGeometry.h"
 #include "Model.h"
 #include "InputManager.h"
+#include <future>
 
 namespace V10
 {
@@ -18,11 +19,20 @@ namespace V10
 		m_commandListPool = std::make_unique<CommandListPool>(this);
 		m_allocatorPool = std::make_unique<CommandAllocatorPool>(this);
 
+#ifdef DEBUG
 		ID3D12Debug* debugController;
 		D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
 
 		debugController->EnableDebugLayer();
 		CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&m_factory));
+
+#endif // DEBUG
+#ifndef DEBUG
+		CreateDXGIFactory2(NULL, IID_PPV_ARGS(&m_factory));
+
+#endif // !DEBUG
+
+
 		m_factory->EnumAdapters(0, &m_adapter);
 		D3D12CreateDevice(m_adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&m_device));
 
@@ -103,7 +113,7 @@ namespace V10
 		CommandList* cl = GetCommandList();
 		RecordCL(cl->GetCommandList());
 		Execute(cl);
-		m_swapchain->Present(1, 0);
+		m_swapchain->Present(0, 0);
 		m_commandQueue->Sync();
 		m_currentBackBuffer++;
 		m_currentBackBuffer = m_currentBackBuffer % 2;
@@ -119,6 +129,17 @@ namespace V10
 			m_drawExecNormalMap->PushDrawableObject(ret);
 		else
 			m_drawExecNoNormal->PushDrawableObject(ret);
+
+		return ret;
+
+	}
+
+	std::shared_ptr<ModelInterface> Graphics::CreateCubeGeometry(std::string tex_name)
+	{
+
+		auto ret = std::make_shared<CubeGeometry>(*this, tex_name);
+		
+		m_drawExecNoNormal->PushDrawableObject(ret);
 
 		return ret;
 
@@ -213,14 +234,17 @@ namespace V10
 
 	void Graphics::BringBackAllocators(ID3D12Fence* fence, UINT64 value, int numCL, CommandList* commandLists)
 	{
-		auto finishEvent = CreateEventA(NULL, FALSE, FALSE, NULL);
-		fence->SetEventOnCompletion(value, finishEvent);
-		WaitForSingleObject(finishEvent, INFINITE);
-		for (size_t i = 0; i < numCL; i++)
-		{
-			m_allocatorPool->SetAvailable(commandLists[i].GetAssociatedCommandAllocator());
-		}
-		CloseHandle(finishEvent);
+		std::async([fence, value,numCL, commandLists, this]() {
+			auto finishEvent = CreateEventA(NULL, FALSE, FALSE, NULL);
+			fence->SetEventOnCompletion(value, finishEvent);
+			WaitForSingleObject(finishEvent, INFINITE);
+			for (size_t i = 0; i < numCL; i++)
+			{
+				m_allocatorPool->SetAvailable(commandLists[i].GetAssociatedCommandAllocator());
+			}
+			CloseHandle(finishEvent);
+			});
+		
 	}
 
 	void Graphics::ResetCommandList(int identifier)

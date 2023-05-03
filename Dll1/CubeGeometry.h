@@ -10,7 +10,7 @@ namespace V10
     class Mesh;
     class Texture2D;
 
-    class CubeGeometry : public ISimpleShadingObject
+    class CubeGeometry : public ModelInterface, public ISimpleShadingObject
     {
     private:
         Graphics& m_graphics;
@@ -27,10 +27,13 @@ namespace V10
         ~CubeGeometry();
 
         void Update(double elapsedSeconds);
-        void Move(DirectX::XMVECTOR translation);
+        void ResetTransform() override;
+        void Move(DirectX::XMVECTOR translation) override;
+        void Rotate(DirectX::FXMVECTOR axis, float angle) override;
 
         void Draw(ID3D12GraphicsCommandList* cl);
         virtual DirectX::XMMATRIX GetModelMatrix() override;
+        virtual DirectX::XMFLOAT3X3 GetNormalMatrix() override;
         virtual DescLocation GetTextureDescriptor() override;
     };
 }

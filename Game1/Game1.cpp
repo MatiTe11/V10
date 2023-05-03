@@ -23,13 +23,6 @@ BOOL                InitInstance(HINSTANCE, int, HWND&);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-static void Up(V10::GraphicsInterface *g)
-{
-	while (!g_quit)
-	{
-		g->Update();
-	}
-}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,

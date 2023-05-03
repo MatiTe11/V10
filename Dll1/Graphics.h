@@ -43,6 +43,7 @@ namespace V10
 		void Init(HWND hwnd) override;
 		void Update() override;
 		std::shared_ptr<ModelInterface> CreateModel(std::string model_name) override;
+		std::shared_ptr<ModelInterface> CreateCubeGeometry(std::string tex_name) override;
 		std::shared_ptr<InputInterface> GetInputInterface() override;
 
 		void RecordCL(ID3D12GraphicsCommandList* cl);
