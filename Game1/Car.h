@@ -2,6 +2,7 @@
 #include <memory>
 #include "../Dll1/ModelInterface.h"
 #include "../Dll1/InputInterface.h"
+#include "../Dll1/CameraInterface.h"
 
 class Car
 {
@@ -21,5 +22,6 @@ private:
 public:
 	Car(std::shared_ptr<V10::ModelInterface> carModel, std::shared_ptr<V10::InputInterface> input);
 	void Update(double deltaTime);
+	void SetCameraBehind(std::shared_ptr<V10::CameraInterface> cam);
 };
 

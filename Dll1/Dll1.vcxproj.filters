@@ -105,6 +105,9 @@
     <ClInclude Include="DrawExecutor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CameraInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

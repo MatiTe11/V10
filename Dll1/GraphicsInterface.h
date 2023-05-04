@@ -6,6 +6,7 @@
 #include <string>
 #include "ModelInterface.h"
 #include "InputInterface.h"
+#include "CameraInterface.h"
 
 
 namespace V10
@@ -21,6 +22,7 @@ namespace V10
 		virtual std::shared_ptr<ModelInterface> CreateModel(std::string model_name) = 0;
 		virtual std::shared_ptr<ModelInterface> CreateCubeGeometry(std::string tex_name) = 0;
 		virtual std::shared_ptr<InputInterface> GetInputInterface() = 0;
+		virtual std::shared_ptr<CameraInterface> GetCameraInterface() = 0;
 
 	};
 

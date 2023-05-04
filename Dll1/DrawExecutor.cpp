@@ -28,7 +28,7 @@ namespace V10
 		cl->SetPipelineState(m_pso);
 		cl->SetGraphicsRootSignature(m_rootSignature);
 
-		Material material{ 0.1,1,1 };
+		Material material{ 0.01,1,1 };
 		//for each object
 		for (int i = 0; i < m_drawableObjects.size(); i++)
 		{

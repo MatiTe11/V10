@@ -1,27 +1,29 @@
 #pragma once
 #include "stdafx.h"
+#include "CameraInterface.h"
 
 
 namespace V10
 {
-	class InputManager;
 
-
-	class Camera
+	class Camera: public CameraInterface
 	{
 	private:
 		DirectX::XMVECTOR m_eyePosition;
-		DirectX::XMVECTOR m_focusPoint;
+		DirectX::XMVECTOR m_lookAt;
 		DirectX::XMVECTOR m_upDirection;
 		DirectX::XMMATRIX m_viewMat;
 		DirectX::XMMATRIX m_projectionMat;
-		//InputManager* m_input;
-		//Graphics& m_graphics;
+		DirectX::XMMATRIX m_VPMat;
 
 	public:
 		Camera();
-		void Update(InputManager* inputs);
-		DirectX::XMMATRIX GetVPmatrix() const;
-		DirectX::XMVECTOR GetPosition() const;
+		void Update();
+		const DirectX::XMMATRIX& GetVPmatrix() const;
+		const DirectX::XMVECTOR& GetPosition() const;
+
+		// Inherited via CameraInterface
+		virtual void SetEyePosition(const DirectX::XMVECTOR& eyePos) override;
+		virtual void SetLookAt(const DirectX::XMVECTOR& lookAt) override;
 	};
 }

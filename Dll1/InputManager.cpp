@@ -35,8 +35,6 @@ namespace V10
 		auto offset = XMVectorSet(m_inputDev->XAxisMovement() * speed, 0, m_inputDev->ZAxisMovement() * speed, 0);
 		m_Position = XMVectorAdd(m_Position, XMVectorScale(m_CameraFront, m_inputDev->ZAxisMovement() * speed));
 		m_Position = XMVectorAdd(m_Position, XMVectorScale(XMVector3Normalize( XMVector3Cross(m_CameraFront, up)), m_inputDev->XAxisMovement() * speed));
-		//cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		//DirectX::XMVectorScale( m_CameraFront, m_inputDev->XAxisMovement());
 	}
 
 }

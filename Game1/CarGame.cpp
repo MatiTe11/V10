@@ -6,6 +6,7 @@
 CarGame::CarGame(V10::GraphicsInterface* graphics) 
 	: m_grahpics(graphics)
 	, m_car(m_grahpics->CreateModel("car"), m_grahpics->GetInputInterface())
+	, m_camera(m_grahpics->GetCameraInterface())
 {
 	float speed = 0.01f;
 	static float pos = 0;
@@ -37,6 +38,7 @@ void CarGame::Update(double deltaTime)
 
 
 	m_car.Update(deltaTime);
+	m_car.SetCameraBehind(m_camera);
 	m_grahpics->Update();
 	auto stop = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);

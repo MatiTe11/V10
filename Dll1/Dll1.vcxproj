@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraInterface.h" />
     <ClInclude Include="CommandList.h" />
     <ClInclude Include="CommandListPool.h" />
     <ClInclude Include="CommandQueue.h" />

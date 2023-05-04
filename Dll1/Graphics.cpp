@@ -71,7 +71,7 @@ namespace V10
 		dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 		dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 		m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsDescriptorHeap));
-		
+
 		D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
 		depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
 		depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
@@ -86,18 +86,18 @@ namespace V10
 			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE,
 			&CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, 1920, 1080, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL),
 			D3D12_RESOURCE_STATE_DEPTH_WRITE, &depthOptimizedClearValue, IID_PPV_ARGS(&m_depthStencilBuffer));
-		
+
 		m_device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilDesc, m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		//END Depth Stencil
 
 
 
-		m_drawExecNormalMap = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShader.cso" },DrawExecutor::GetRootParamsForNormalMap());
-		m_drawExecNoNormal = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShaderWoNormalMap.cso" },DrawExecutor::GetRootParamsNoNormalMap());
-		
-		m_camera = std::make_unique<Camera>();
+		m_drawExecNormalMap = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShader.cso" }, DrawExecutor::GetRootParamsForNormalMap());
+		m_drawExecNoNormal = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShaderWoNormalMap.cso" }, DrawExecutor::GetRootParamsNoNormalMap());
+
+		m_camera = std::make_shared<Camera>();
 		m_inputManager = std::make_unique<InputManager>(new XboxInputDevice()); //TODO:: mem leak //PC
-		m_camera->Update(m_inputManager.get());
+		m_camera->Update();
 
 	}
 
@@ -106,9 +106,8 @@ namespace V10
 	{
 		static int cnt = 0;
 		cnt++;
-		//m_firstObj->Update(cnt);
 		m_inputManager->Update(1);
-		//m_camera->Update(m_inputManager.get());
+		m_camera->Update();
 
 		CommandList* cl = GetCommandList();
 		RecordCL(cl->GetCommandList());
@@ -121,7 +120,7 @@ namespace V10
 
 	std::shared_ptr<ModelInterface> Graphics::CreateModel(std::string model_name)
 	{
-		
+
 		auto ret = std::make_shared<Model>(*this, model_name);
 		auto path = std::filesystem::current_path();
 		path /= model_name + "Normal.png";
@@ -138,7 +137,7 @@ namespace V10
 	{
 
 		auto ret = std::make_shared<CubeGeometry>(*this, tex_name);
-		
+
 		m_drawExecNoNormal->PushDrawableObject(ret);
 
 		return ret;
@@ -149,6 +148,11 @@ namespace V10
 	{
 		auto ret = std::make_shared<XboxInputDevice>();
 		return ret;
+	}
+
+	std::shared_ptr<CameraInterface> Graphics::GetCameraInterface()
+	{
+		return std::static_pointer_cast<CameraInterface>(m_camera);
 	}
 
 	void Graphics::RecordCL(ID3D12GraphicsCommandList* cl)
@@ -234,7 +238,7 @@ namespace V10
 
 	void Graphics::BringBackAllocators(ID3D12Fence* fence, UINT64 value, int numCL, CommandList* commandLists)
 	{
-		std::async([fence, value,numCL, commandLists, this]() {
+		std::async([fence, value, numCL, commandLists, this]() {
 			auto finishEvent = CreateEventA(NULL, FALSE, FALSE, NULL);
 			fence->SetEventOnCompletion(value, finishEvent);
 			WaitForSingleObject(finishEvent, INFINITE);
@@ -244,7 +248,7 @@ namespace V10
 			}
 			CloseHandle(finishEvent);
 			});
-		
+
 	}
 
 	void Graphics::ResetCommandList(int identifier)
@@ -279,3 +283,4 @@ namespace V10
 	{
 	}
 }
+	

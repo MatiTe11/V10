@@ -12,6 +12,7 @@ namespace V10
 	class CommandQueue;
 	class CubeGeometry;
 	class Model;
+	class InputManager;
 
 	class Graphics : public GraphicsInterface
 	{
@@ -32,7 +33,7 @@ namespace V10
 		std::unique_ptr<CommandListPool> m_commandListPool;
 		std::unique_ptr<DrawExecutor> m_drawExecNormalMap;
 		std::unique_ptr<DrawExecutor> m_drawExecNoNormal;
-		std::unique_ptr<Camera> m_camera;
+		std::shared_ptr<Camera> m_camera;
 		std::unique_ptr<InputManager> m_inputManager;
 
 		HRESULT m_result;
@@ -45,6 +46,8 @@ namespace V10
 		std::shared_ptr<ModelInterface> CreateModel(std::string model_name) override;
 		std::shared_ptr<ModelInterface> CreateCubeGeometry(std::string tex_name) override;
 		std::shared_ptr<InputInterface> GetInputInterface() override;
+		virtual std::shared_ptr<CameraInterface> GetCameraInterface() override;
+
 
 		void RecordCL(ID3D12GraphicsCommandList* cl);
 		void Execute(CommandList* cl);
