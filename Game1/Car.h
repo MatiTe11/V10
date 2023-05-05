@@ -14,6 +14,7 @@ private:
 
 	double m_speed;
 	double m_rotation;
+	double m_acceleration;
 
 	std::shared_ptr<V10::ModelInterface> m_carModel;
 	std::shared_ptr<V10::InputInterface> m_input;

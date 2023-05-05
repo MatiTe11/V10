@@ -4,7 +4,7 @@ struct ModelMatrix
 };
 struct NormalMatrix
 {
-	float3x3 normal;
+	matrix normal;
 };
 struct ViewProjectionMatrix
 {
@@ -40,10 +40,7 @@ VertexShaderOutput main(VertexShaderInput IN)
 
 	VertexShaderOutput OUT;
 	OUT.texCoord = IN.texCoord;
-	OUT.normal = IN.normal;
-	//OUT.normal = mul(ModelCB.model, float4(IN.position, 1.0f));
 	OUT.position = mul(ModelCB.model, float4(IN.position, 1.0f));
-	//OUT.normal = mul(ModelCB.model, float4(IN.normal, 1.0f));
 	OUT.normal = mul(NormalCB.normal, IN.normal);
 	OUT.positionSV = mul(vpCB.vp, OUT.position);
 	OUT.TBN = TBN;

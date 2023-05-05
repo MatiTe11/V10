@@ -7,7 +7,7 @@ namespace V10
 	{
 	public:
 		virtual DirectX::XMMATRIX GetModelMatrix() = 0;
-		virtual DirectX::XMFLOAT3X3 GetNormalMatrix() = 0;
+		virtual DirectX::XMMATRIX GetNormalMatrix() = 0;
 		virtual DescLocation GetTextureDescriptor() = 0;
 		virtual const Material& GetMaterial() = 0;
 		virtual void Draw(ID3D12GraphicsCommandList* cl) = 0;

@@ -69,13 +69,14 @@ namespace V10
 	{
 		return m_modelMat;
 	}
-	DirectX::XMFLOAT3X3 CubeGeometry::GetNormalMatrix()
+	DirectX::XMMATRIX CubeGeometry::GetNormalMatrix()
 	{
 		using namespace DirectX;
 		auto mat4 = XMMatrixTranspose(XMMatrixInverse(nullptr, m_modelMat));
-		return XMFLOAT3X3(XMVectorGetX(mat4.r[0]), XMVectorGetY(mat4.r[0]), XMVectorGetZ(mat4.r[0]),
+		return mat4;
+		/*return XMFLOAT3X3(XMVectorGetX(mat4.r[0]), XMVectorGetY(mat4.r[0]), XMVectorGetZ(mat4.r[0]),
 			XMVectorGetX(mat4.r[1]), XMVectorGetY(mat4.r[1]), XMVectorGetZ(mat4.r[1]),
-			XMVectorGetX(mat4.r[2]), XMVectorGetY(mat4.r[2]), XMVectorGetZ(mat4.r[2]));
+			XMVectorGetX(mat4.r[2]), XMVectorGetY(mat4.r[2]), XMVectorGetZ(mat4.r[2]));*/
 	}
 	DescLocation CubeGeometry::GetTextureDescriptor()
 	{

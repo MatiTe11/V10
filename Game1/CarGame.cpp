@@ -41,10 +41,8 @@ void CarGame::Update(double deltaTime)
 	m_dragon->Move(DirectX::XMVectorSet(-3, -1, 5, 1));
 
 
-	m_car.Update(deltaTime);
+	m_car.Update(m_deltaTime);
 	m_car.SetCameraBehind(m_camera);
 	m_grahpics->Update();
-	auto stop = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-	std::cout << duration.count() << std::endl;
+	m_deltaTime = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(std::chrono::high_resolution_clock::now() - start).count();
 }

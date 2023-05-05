@@ -9,6 +9,7 @@ Car::Car(std::shared_ptr<V10::ModelInterface> carModel, std::shared_ptr<V10::Inp
 	m_carModel->Move(DirectX::XMVectorSet(3, -1, 5, 1));
 	m_speed = 0;
 	m_rotation = 0;
+	m_acceleration = 2;
 }
 
 void Car::Update(double deltaTime)
@@ -21,17 +22,17 @@ void Car::Update(double deltaTime)
 
 
 	if (m_input->isKeyPressed(V10::Button::LEFT))
-		m_rotation -= 0.01;
+		m_rotation -= m_acceleration / 100;
 	if (m_input->isKeyPressed(V10::Button::RIGHT))
-		m_rotation += 0.01;
+		m_rotation += m_acceleration / 100;
 	if (m_input->isKeyPressed(V10::Button::A))
-		m_speed = 0.01;
+		m_speed = m_acceleration;
 	else if (m_input->isKeyPressed(V10::Button::B))
-		m_speed = -0.01;
+		m_speed = -m_acceleration;
 	else
 		m_speed = 0;
 
-	m_vec = XMVectorAdd( XMVectorScale( XMVectorSet(XMScalarSin(m_rotation), 0, XMScalarCos(m_rotation), 0) , m_speed), m_vec);
+	m_vec = XMVectorAdd( XMVectorScale( XMVectorSet(XMScalarSin(m_rotation), 0, XMScalarCos(m_rotation), 0) , m_speed * deltaTime/1000), m_vec);
 
 }
 

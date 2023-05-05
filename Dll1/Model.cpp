@@ -61,13 +61,15 @@ namespace V10
 	{
 		return m_modelMat;
 	}
-	DirectX::XMFLOAT3X3 Model::GetNormalMatrix()
+	DirectX::XMMATRIX Model::GetNormalMatrix()
 	{
 		using namespace DirectX;
 		auto mat4 = XMMatrixTranspose(XMMatrixInverse(nullptr, m_modelMat));
-		return XMFLOAT3X3(XMVectorGetX(mat4.r[0]), XMVectorGetY(mat4.r[0]), XMVectorGetZ(mat4.r[0]),
+		//auto mat4 = XMMatrixInverse(nullptr, XMMatrixTranspose(m_modelMat));
+		return mat4;
+		/*return XMFLOAT3X3(XMVectorGetX(mat4.r[0]), XMVectorGetY(mat4.r[0]), XMVectorGetZ(mat4.r[0]),
 							XMVectorGetX(mat4.r[1]), XMVectorGetY(mat4.r[1]), XMVectorGetZ(mat4.r[1]),
-							XMVectorGetX(mat4.r[2]), XMVectorGetY(mat4.r[2]), XMVectorGetZ(mat4.r[2]));
+							XMVectorGetX(mat4.r[2]), XMVectorGetY(mat4.r[2]), XMVectorGetZ(mat4.r[2]));*/
 	}
 	DescLocation Model::GetTextureDescriptor()
 	{

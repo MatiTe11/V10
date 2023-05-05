@@ -10,6 +10,7 @@ private:
 	Car m_car;
 	std::shared_ptr<V10::ModelInterface> m_dragon;
 	std::shared_ptr<V10::CameraInterface> m_camera;
+	double m_deltaTime;
 
 public:
 

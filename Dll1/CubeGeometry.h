@@ -34,7 +34,7 @@ namespace V10
 
         void Draw(ID3D12GraphicsCommandList* cl);
         virtual DirectX::XMMATRIX GetModelMatrix() override;
-        virtual DirectX::XMFLOAT3X3 GetNormalMatrix() override;
+        virtual DirectX::XMMATRIX GetNormalMatrix() override;
         virtual DescLocation GetTextureDescriptor() override;
         virtual const Material& GetMaterial() override;
     };

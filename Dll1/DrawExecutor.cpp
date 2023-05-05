@@ -36,7 +36,7 @@ namespace V10
 			auto vpMat =  cam->GetVPmatrix();
 			auto camPos = cam->GetPosition();
 			cl->SetGraphicsRoot32BitConstants(0, sizeof(DirectX::XMMATRIX) / 4, &modelMat, 0);
-			cl->SetGraphicsRoot32BitConstants(1, sizeof(DirectX::XMFLOAT3X3) / 4, &normalMat, 0);
+			cl->SetGraphicsRoot32BitConstants(1, sizeof(DirectX::XMMATRIX) / 4, &normalMat, 0);
 			cl->SetGraphicsRoot32BitConstants(2, sizeof(DirectX::XMMATRIX) / 4, &vpMat, 0);
 			cl->SetGraphicsRoot32BitConstants(3, sizeof(Material) / 4, &(m_drawableObjects[i]->GetMaterial()), 0);
 			cl->SetGraphicsRoot32BitConstants(4, sizeof(DirectX::XMVECTOR) / 4, &camPos, 0);
@@ -66,7 +66,7 @@ namespace V10
 		rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_ROOT_CONSTANTS normalRC{ 0 };
-		normalRC.Num32BitValues = sizeof(DirectX::XMFLOAT3X3) / 4;
+		normalRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
 		normalRC.RegisterSpace = 0;
 		normalRC.ShaderRegister = 1;
 		rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
@@ -127,7 +127,7 @@ namespace V10
 		rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		D3D12_ROOT_CONSTANTS normalRC{ 0 };
-		normalRC.Num32BitValues = sizeof(DirectX::XMFLOAT3X3) / 4;
+		normalRC.Num32BitValues = sizeof(DirectX::XMMATRIX) / 4;
 		normalRC.RegisterSpace = 0;
 		normalRC.ShaderRegister = 1;
 		rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
