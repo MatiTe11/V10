@@ -29,7 +29,6 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 {
     float3 rgb_norm = input.normal;
     rgb_norm = normalize(rgb_norm);
-   // rgb_norm = normalize(mul(input.TBN, rgb_norm));
     input.normal = rgb_norm;
     //diffuse
     float3 lightDir = (-input.position);

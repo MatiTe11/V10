@@ -12,6 +12,7 @@ namespace V10
 		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 1);
 		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor());
 		m_Mesh = std::make_unique<Mesh>(graphics);
+		m_Material = Material{ 1,1,1 };
 	}
 
 	CubeGeometry::CubeGeometry(Graphics& graphics, std::string tex)
@@ -22,6 +23,8 @@ namespace V10
 		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 1);
 		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), diffusePath);
 		m_Mesh = std::make_unique<Mesh>(graphics);
+		m_Material = Material{ 1,1,1 };
+
 	}
 
 	CubeGeometry::CubeGeometry(Graphics& graphics, std::string tex, std::string normalTex)
@@ -31,6 +34,8 @@ namespace V10
 		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), tex);
 		m_NormalTexture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), normalTex);
 		m_Mesh = std::make_unique<Mesh>(graphics);
+		m_Material = Material{ 1,1,1 };
+
 	}
 
 	CubeGeometry::~CubeGeometry()
@@ -75,5 +80,9 @@ namespace V10
 	DescLocation CubeGeometry::GetTextureDescriptor()
 	{
 		return m_Texture->GetDescHandle();
+	}
+	const Material& CubeGeometry::GetMaterial()
+	{
+		return m_Material;
 	}
 }

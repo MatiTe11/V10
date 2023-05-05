@@ -19,6 +19,7 @@ namespace V10
         std::unique_ptr<Texture2D> m_NormalTexture;
         std::unique_ptr<DescriptorHeap> m_descHeap;
         DirectX::XMMATRIX m_modelMat;
+        Material m_Material;
 
     public:
         CubeGeometry(Graphics& graphics);
@@ -35,6 +36,7 @@ namespace V10
         virtual DirectX::XMMATRIX GetModelMatrix() override;
         virtual DirectX::XMFLOAT3X3 GetNormalMatrix() override;
         virtual DescLocation GetTextureDescriptor() override;
+        virtual const Material& GetMaterial() override;
     };
 }
 

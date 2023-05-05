@@ -19,7 +19,7 @@ namespace V10
 
 		const D3D12_RESOURCE_DESC& GetDesc() { return m_textureDesc; }
 		ID3D12Resource* Get() { return m_texture; }
-		DescLocation GetDescHandle() { return m_descHandle; }
+		const DescLocation& GetDescHandle() { return m_descHandle; }
 
 	private:
 		DirectX::Image LoadFromFile(std::wstring filename);

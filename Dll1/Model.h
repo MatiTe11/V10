@@ -20,12 +20,12 @@ namespace V10
         std::unique_ptr<Texture2D> m_NormalTextures;
         std::unique_ptr<DescriptorHeap> m_descHeap;
         DirectX::XMMATRIX m_modelMat;
+        Material m_Material;
 
     public:
         Model(Graphics& graphics, std::string modelPath);
         ~Model();
 
-        void Update(double elapsedSeconds);
         void ResetTransform() override;
         void Move(DirectX::XMVECTOR translation) override;
         void Rotate(DirectX::FXMVECTOR axis, float angle) override;
@@ -35,6 +35,7 @@ namespace V10
         virtual DirectX::XMMATRIX GetModelMatrix() override;
         virtual DirectX::XMFLOAT3X3 GetNormalMatrix() override;
         virtual DescLocation GetTextureDescriptor() override;
+        virtual const Material& GetMaterial() override;
     private:
         void ProcessNode(aiNode* node, const aiScene* scene);
     };

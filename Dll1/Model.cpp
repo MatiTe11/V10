@@ -30,17 +30,15 @@ namespace V10
 		if(std::filesystem::exists(path))
 			m_NormalTextures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), normalPath);
 
+		m_Material = Material{ 0.01,1,1 };
+
 	}
 
 	Model::~Model()
 	{
 	}
 
-	void Model::Update(double elapsedSeconds)
-	{
-		//const DirectX::XMVECTOR rotationAxis = DirectX::XMVectorSet(0, 1, 1, 1);
-		//m_modelMat = DirectX::XMMatrixRotationAxis(rotationAxis, DirectX::XMConvertToRadians(0));
-	}
+
 	void Model::ResetTransform()
 	{
 		auto vec = DirectX::XMVectorSet(0, 0, 0, 1);
@@ -48,8 +46,6 @@ namespace V10
 	}
 	void Model::Move(DirectX::XMVECTOR translation)
 	{
-		//m_modelMat = DirectX::XMMatrixTranslationFromVector(translation);
-
 		m_modelMat = DirectX::XMMatrixMultiply(m_modelMat, DirectX::XMMatrixTranslationFromVector(translation));
 	}
 	void Model::Rotate(DirectX::FXMVECTOR axis, float angle)
@@ -76,6 +72,10 @@ namespace V10
 	DescLocation Model::GetTextureDescriptor()
 	{
 		return m_Textures->GetDescHandle();
+	}
+	const Material& Model::GetMaterial()
+	{
+		return m_Material;
 	}
 	void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	{

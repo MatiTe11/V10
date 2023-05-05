@@ -28,7 +28,6 @@ namespace V10
 		cl->SetPipelineState(m_pso);
 		cl->SetGraphicsRootSignature(m_rootSignature);
 
-		Material material{ 0.01,1,1 };
 		//for each object
 		for (int i = 0; i < m_drawableObjects.size(); i++)
 		{
@@ -39,7 +38,7 @@ namespace V10
 			cl->SetGraphicsRoot32BitConstants(0, sizeof(DirectX::XMMATRIX) / 4, &modelMat, 0);
 			cl->SetGraphicsRoot32BitConstants(1, sizeof(DirectX::XMFLOAT3X3) / 4, &normalMat, 0);
 			cl->SetGraphicsRoot32BitConstants(2, sizeof(DirectX::XMMATRIX) / 4, &vpMat, 0);
-			cl->SetGraphicsRoot32BitConstants(3, sizeof(Material) / 4, &material, 0);
+			cl->SetGraphicsRoot32BitConstants(3, sizeof(Material) / 4, &(m_drawableObjects[i]->GetMaterial()), 0);
 			cl->SetGraphicsRoot32BitConstants(4, sizeof(DirectX::XMVECTOR) / 4, &camPos, 0);
 			auto desc = m_drawableObjects[i]->GetTextureDescriptor();
 			cl->SetDescriptorHeaps(1, &desc.descHeap);

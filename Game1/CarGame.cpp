@@ -22,7 +22,11 @@ CarGame::CarGame(V10::GraphicsInterface* graphics)
 
 	auto brick = m_grahpics->CreateCubeGeometry("tex");
 	brick->ResetTransform();
-	brick->Move(DirectX::XMVectorSet(3, -5, 5, 1));
+	brick->Move(DirectX::XMVectorSet(3, -3, 5, 1));
+
+	auto sun = m_grahpics->CreateCubeGeometry("sun");
+	sun->ResetTransform();
+	sun->Move(DirectX::XMVectorSet(0, 0, 0, 1));
 }
 
 void CarGame::Update(double deltaTime)
