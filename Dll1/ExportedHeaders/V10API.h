@@ -1,7 +1,7 @@
 #pragma once
 #include "../GraphicsInterface.h"
 
-#ifdef MATHLIBRARY_EXPORTS
+#ifdef V10_API
 #define V10_API __declspec(dllexport)
 #else
 #define V10_API __declspec(dllimport)
