@@ -20,7 +20,7 @@ CarGame::CarGame(V10::GraphicsInterface* graphics)
 	backpack->ResetTransform();
 	backpack->Move(DirectX::XMVectorSet(0, 0, -10, 1));
 
-	auto brick = m_grahpics->CreateCubeGeometry("tex");
+	auto brick = m_grahpics->CreateCubeGeometry("cobb");
 	brick->ResetTransform();
 	brick->Move(DirectX::XMVectorSet(3, -3, 5, 1));
 

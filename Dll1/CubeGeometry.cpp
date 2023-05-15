@@ -34,7 +34,7 @@ namespace V10
 		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), tex);
 		m_NormalTexture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), normalTex);
 		m_Mesh = std::make_unique<Mesh>(graphics);
-		m_Material = Material{ 1,1,1 };
+		m_Material = Material{ 0.1, 1, 1 };
 
 	}
 

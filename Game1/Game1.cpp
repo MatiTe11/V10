@@ -3,7 +3,7 @@
 
 #include "stdafx2.h"
 #include "Game1.h"
-#include "MathLibrary.h"
+#include "V10API.h"
 #include "CarGame.h"
 #include <iostream>
 #include <thread>
@@ -31,14 +31,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-
-    // TODO: Place code here.
-
-	 // Initialize a Fibonacci relation sequence.
-	fibonacci_init(1, 1);
-	
-	// Write out the sequence values until overflow.
-
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);

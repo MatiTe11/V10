@@ -135,11 +135,17 @@ namespace V10
 
 	std::shared_ptr<ModelInterface> Graphics::CreateCubeGeometry(std::string tex_name)
 	{
-
-		auto ret = std::make_shared<CubeGeometry>(*this, tex_name);
-
-		m_drawExecNoNormal->PushDrawableObject(ret);
-
+		std::shared_ptr<CubeGeometry> ret;
+		auto path = std::filesystem::current_path();
+		path /= tex_name + "Normal.png";
+		if (std::filesystem::exists(path)) {
+			ret = std::make_shared<CubeGeometry>(*this, tex_name + "Diff.png", tex_name + "Normal.png");
+			m_drawExecNormalMap->PushDrawableObject(ret);
+		}
+		else {
+			ret = std::make_shared<CubeGeometry>(*this, tex_name);
+			m_drawExecNoNormal->PushDrawableObject(ret);
+		}
 		return ret;
 
 	}

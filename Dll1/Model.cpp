@@ -30,7 +30,7 @@ namespace V10
 		if(std::filesystem::exists(path))
 			m_NormalTextures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), normalPath);
 
-		m_Material = Material{ 0.01,1,1 };
+		m_Material = Material{ 0.01, 1, 1 };
 
 	}
 

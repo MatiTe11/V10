@@ -168,7 +168,7 @@
     <ClInclude Include="DescriptorHeap.h" />
     <ClInclude Include="DrawExecutor.h" />
     <ClInclude Include="DumbInputDevice.h" />
-    <ClInclude Include="ExportedHeaders\MathLibrary.h" />
+    <ClInclude Include="ExportedHeaders\V10API.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="GraphicsInterface.h" />
@@ -201,7 +201,7 @@
     <ClCompile Include="DrawExecutor.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="MathLibrary.cpp" />
+    <ClCompile Include="V10API.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="PCInputDevice.cpp" />
