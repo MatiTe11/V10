@@ -61,6 +61,9 @@ namespace V10
 	{
 		m_modelMat = DirectX::XMMatrixMultiply(m_modelMat, DirectX::XMMatrixRotationNormal(axis, angle));
 	}
+	void CubeGeometry::Scale(DirectX::FXMVECTOR axis)
+	{
+	}
 	void CubeGeometry::Draw(ID3D12GraphicsCommandList* cl)
 	{
 		m_Mesh->Draw(cl);

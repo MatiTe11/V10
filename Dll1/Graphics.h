@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "CommandList.h"
-#include "Camera.h"
+#include "InputInterface.h"
 #include "GraphicsInterface.h"
 
 namespace V10
@@ -13,6 +13,8 @@ namespace V10
 	class CubeGeometry;
 	class Model;
 	class InputManager;
+	class Camera;
+	class XboxInputDevice;
 
 	class Graphics : public GraphicsInterface
 	{
@@ -34,7 +36,7 @@ namespace V10
 		std::unique_ptr<DrawExecutor> m_drawExecNormalMap;
 		std::unique_ptr<DrawExecutor> m_drawExecNoNormal;
 		std::shared_ptr<Camera> m_camera;
-		std::unique_ptr<InputManager> m_inputManager;
+		std::shared_ptr<XboxInputDevice> m_inputInterface;
 
 		HRESULT m_result;
 		HWND m_hWnd;

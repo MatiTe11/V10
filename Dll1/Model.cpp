@@ -52,6 +52,9 @@ namespace V10
 	{
 		m_modelMat = DirectX::XMMatrixMultiply(m_modelMat, DirectX::XMMatrixRotationNormal(axis, angle));
 	}
+	void Model::Scale(DirectX::FXMVECTOR axis)
+	{
+	}
 	void Model::Draw(ID3D12GraphicsCommandList* cl)
 	{
 		for(auto& mesh : m_Meshes)

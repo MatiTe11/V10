@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "DescriptorHeap.h"
 #include "ISimpleShadingObject.h"
+#include "Camera.h"
 
 namespace V10
 {
@@ -28,13 +29,15 @@ namespace V10
 		cl->SetPipelineState(m_pso);
 		cl->SetGraphicsRootSignature(m_rootSignature);
 
+		auto vpMat = cam->GetVPmatrix();
+		auto camPos = cam->GetPosition();
+
 		//for each object
 		for (int i = 0; i < m_drawableObjects.size(); i++)
 		{
 			auto modelMat = m_drawableObjects[i]->GetModelMatrix();
 			auto normalMat = m_drawableObjects[i]->GetNormalMatrix();
-			auto vpMat =  cam->GetVPmatrix();
-			auto camPos = cam->GetPosition();
+			
 			cl->SetGraphicsRoot32BitConstants(0, sizeof(DirectX::XMMATRIX) / 4, &modelMat, 0);
 			cl->SetGraphicsRoot32BitConstants(1, sizeof(DirectX::XMMATRIX) / 4, &normalMat, 0);
 			cl->SetGraphicsRoot32BitConstants(2, sizeof(DirectX::XMMATRIX) / 4, &vpMat, 0);

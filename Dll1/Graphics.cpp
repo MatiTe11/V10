@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Graphics.h"
+#include "Camera.h"
 #include "DrawExecutor.h"
 #include "CommandAllocatorPool.h"
 #include "CommandListPool.h"
@@ -88,15 +89,13 @@ namespace V10
 			D3D12_RESOURCE_STATE_DEPTH_WRITE, &depthOptimizedClearValue, IID_PPV_ARGS(&m_depthStencilBuffer));
 
 		m_device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilDesc, m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-		//END Depth Stencil
-
 
 
 		m_drawExecNormalMap = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShader.cso" }, DrawExecutor::GetRootParamsForNormalMap());
 		m_drawExecNoNormal = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShaderWoNormalMap.cso" }, DrawExecutor::GetRootParamsNoNormalMap());
 
 		m_camera = std::make_shared<Camera>();
-		m_inputManager = std::make_unique<InputManager>(new XboxInputDevice()); //TODO:: mem leak //PC
+		m_inputInterface = std::make_shared<XboxInputDevice>();
 		m_camera->Update();
 
 	}
@@ -106,12 +105,11 @@ namespace V10
 	{
 		static int cnt = 0;
 		cnt++;
-		m_inputManager->Update(1);
 		m_camera->Update();
 
 		CommandList* cl = GetCommandList();
 		RecordCL(cl->GetCommandList());
-		Execute(cl);
+		m_commandQueue->Execute(1, cl);
 		m_swapchain->Present(0, 0);
 		m_commandQueue->Sync();
 		m_currentBackBuffer++;
@@ -152,8 +150,8 @@ namespace V10
 
 	std::shared_ptr<InputInterface> Graphics::GetInputInterface()
 	{
-		auto ret = std::make_shared<XboxInputDevice>();
-		return ret;
+		return std::static_pointer_cast<InputInterface>(m_inputInterface);
+
 	}
 
 	std::shared_ptr<CameraInterface> Graphics::GetCameraInterface()
@@ -178,7 +176,6 @@ namespace V10
 		scissorRect.top = 0;
 		scissorRect.right = 1920;
 		scissorRect.bottom = 1020;
-
 		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvDescHeap->GetCPUDescriptorHandleForHeapStart());
 		CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 		rtvHandle.Offset(m_currentBackBuffer, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
