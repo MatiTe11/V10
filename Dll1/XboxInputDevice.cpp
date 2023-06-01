@@ -36,10 +36,14 @@ namespace V10
 	{
 	}
 
+	void XboxInputDevice::Update()
+	{
+		auto dwResult = XInputGetState(0, &m_controllerState[0]);
+	}
+
 	
 	bool XboxInputDevice::isKeyPressed(Button b)
 	{
-		auto dwResult = XInputGetState(0, &m_controllerState[0]);
 
 		switch (b)
 		{

@@ -17,5 +17,6 @@ namespace V10
 		ID3D12GraphicsCommandList* GetCommandList() { return m_commandList; }
 		ID3D12CommandAllocator* GetAssociatedCommandAllocator() { return m_associatedCommandAllocator; }
 		void Reset(ID3D12CommandAllocator* ca);
+		void MakeAvailable();
 	};
 }

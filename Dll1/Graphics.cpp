@@ -91,25 +91,31 @@ namespace V10
 		m_device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilDesc, m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
 
-		m_drawExecNormalMap = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShader.cso" }, DrawExecutor::GetRootParamsForNormalMap());
-		m_drawExecNoNormal = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShaderWoNormalMap.cso" }, DrawExecutor::GetRootParamsNoNormalMap());
+		auto de1 = std::async(std::launch::async, [this]() {m_drawExecNormalMap = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShader.cso" }, DrawExecutor::GetRootParamsForNormalMap()); });
+		auto de2 = std::async(std::launch::async, [this]() {m_drawExecNoNormal = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShaderWoNormalMap.cso" }, DrawExecutor::GetRootParamsNoNormalMap()); });
 
 		m_camera = std::make_shared<Camera>();
 		m_inputInterface = std::make_shared<XboxInputDevice>();
 		m_camera->Update();
+		de1.wait();
+		de2.wait();
 
 	}
 
 
 	void Graphics::Update()
 	{
-		static int cnt = 0;
-		cnt++;
+		m_inputInterface->Update();
 		m_camera->Update();
+		std::vector<CommandList*> commandLists{ GetCommandList(), GetCommandList() };
+		auto f1 = std::async(std::launch::async, [this, cl = commandLists[0]]() {RecordCL(cl->GetCommandList(), m_drawExecNormalMap.get(), CLcalls::Begin); });
+		auto f2 = std::async(std::launch::async, [this, cl = commandLists[1]]() {RecordCL(cl->GetCommandList(), m_drawExecNoNormal.get(), CLcalls::End); });
+		f1.wait();
+		f2.wait();
+		m_commandQueue->Execute(2, commandLists.data());
+		commandLists[0]->MakeAvailable();
+		commandLists[1]->MakeAvailable();
 
-		CommandList* cl = GetCommandList();
-		RecordCL(cl->GetCommandList());
-		m_commandQueue->Execute(1, cl);
 		m_swapchain->Present(0, 0);
 		m_commandQueue->Sync();
 		m_currentBackBuffer++;
@@ -159,48 +165,57 @@ namespace V10
 		return std::static_pointer_cast<CameraInterface>(m_camera);
 	}
 
-	void Graphics::RecordCL(ID3D12GraphicsCommandList* cl)
+	void Graphics::RecordCL(ID3D12GraphicsCommandList* cl, DrawExecutor* drawExecutor, CLcalls calls)
 	{
-		D3D12_VIEWPORT viewport;
-		// Fill out the Viewport
-		viewport.TopLeftX = 0;
-		viewport.TopLeftY = 0;
-		viewport.Width = 1920;
-		viewport.Height = 1080;
-		viewport.MinDepth = 0.0f;
-		viewport.MaxDepth = 1.0f;
+		
+			D3D12_VIEWPORT viewport;
+			// Fill out the Viewport
+			viewport.TopLeftX = 0;
+			viewport.TopLeftY = 0;
+			viewport.Width = 1920;
+			viewport.Height = 1080;
+			viewport.MinDepth = 0.0f;
+			viewport.MaxDepth = 1.0f;
 
-		// Fill out a scissor rect
-		D3D12_RECT scissorRect;
-		scissorRect.left = 0;
-		scissorRect.top = 0;
-		scissorRect.right = 1920;
-		scissorRect.bottom = 1020;
-		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvDescHeap->GetCPUDescriptorHandleForHeapStart());
-		CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-		rtvHandle.Offset(m_currentBackBuffer, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
-		float color[4] = { 0.01,0.01,0.01,1 };
-		auto barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
-		cl->ResourceBarrier(1, &barrier);
-		cl->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
-		cl->ClearRenderTargetView(rtvHandle, color, 0, NULL);
-		cl->ClearDepthStencilView(m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+			// Fill out a scissor rect
+			D3D12_RECT scissorRect;
+			scissorRect.left = 0;
+			scissorRect.top = 0;
+			scissorRect.right = 1920;
+			scissorRect.bottom = 1020;
+			CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvDescHeap->GetCPUDescriptorHandleForHeapStart());
+			CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+			rtvHandle.Offset(m_currentBackBuffer, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+			
+			cl->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+			if (calls == CLcalls::Begin)
+			{
+				float color[4] = { 0.2,0.2,0.2,1 };
+				auto barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
+				cl->ResourceBarrier(1, &barrier);
+				cl->ClearRenderTargetView(rtvHandle, color, 0, NULL);
+				cl->ClearDepthStencilView(m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+			}
 
-		cl->RSSetScissorRects(1, &scissorRect);
-		cl->RSSetViewports(1, &viewport);
-		m_drawExecNormalMap->Draw(cl, m_camera.get());
-		m_drawExecNoNormal->Draw(cl, m_camera.get());
-		barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);
-		cl->ResourceBarrier(1, &barrier);
+			cl->RSSetScissorRects(1, &scissorRect);
+			cl->RSSetViewports(1, &viewport);
+		
+
+		drawExecutor->Draw(cl, m_camera.get());
+
+		if (calls == CLcalls::End)
+		{
+			auto barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);
+			cl->ResourceBarrier(1, &barrier);
+		}
 		cl->Close();
 	}
 
-
 	void Graphics::Execute(CommandList* cl)
 	{
-		m_commandQueue->Execute(1, cl);
+		m_commandQueue->Execute(1, &cl);
+		cl->MakeAvailable();
 	}
-
 
 	CommandList* Graphics::GetCommandList()
 	{
@@ -239,15 +254,15 @@ namespace V10
 		return resource;
 	}
 
-	void Graphics::BringBackAllocators(ID3D12Fence* fence, UINT64 value, int numCL, CommandList* commandLists)
+	void Graphics::BringBackAllocators(ID3D12Fence* fence, UINT64 value, int numCL, CommandList** commandLists)
 	{
-		std::async([fence, value, numCL, commandLists, this]() {
+		std::async(std::launch::async, [fence, value, numCL, commandLists, this]() {
 			auto finishEvent = CreateEventA(NULL, FALSE, FALSE, NULL);
 			fence->SetEventOnCompletion(value, finishEvent);
 			WaitForSingleObject(finishEvent, INFINITE);
 			for (size_t i = 0; i < numCL; i++)
 			{
-				m_allocatorPool->SetAvailable(commandLists[i].GetAssociatedCommandAllocator());
+				m_allocatorPool->SetAvailable(commandLists[i]->GetAssociatedCommandAllocator());
 			}
 			CloseHandle(finishEvent);
 			});

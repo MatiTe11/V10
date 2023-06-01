@@ -18,7 +18,11 @@ namespace V10
 	{
 		m_commandList->Reset(ca, nullptr);
 		m_associatedCommandAllocator = ca;
+		//m_graphics->ResetCommandList(m_identifier);
+		//TODO: powinno równie¿ przywróciæ do commandallocator poola poprzedni associated ca (chyba jednak nie)
+	}
+	void CommandList::MakeAvailable() 
+	{
 		m_graphics->ResetCommandList(m_identifier);
-		//TODO: powinno równie¿ przywróciæ do commandallocator poola poprzedni associated ca
 	}
 }

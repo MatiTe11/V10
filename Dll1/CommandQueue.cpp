@@ -23,13 +23,13 @@ namespace V10
 	{
 	}
 
-	void CommandQueue::Execute(int num, CommandList* commandLists)
+	void CommandQueue::Execute(int num, CommandList** commandLists)
 	{
 		std::vector<ID3D12CommandList*> cls(num);
 
 		for (size_t i = 0; i < num; i++)
 		{
-			commandLists[i].GetCommandList()->QueryInterface(__uuidof(ID3D12CommandList), (void**)&cls[i]);
+			commandLists[i]->GetCommandList()->QueryInterface(__uuidof(ID3D12CommandList), (void**)&cls[i]);
 		}
 
 		m_commandQueue->ExecuteCommandLists(num, (cls.data()));
@@ -41,9 +41,9 @@ namespace V10
 	void CommandQueue::Sync()
 	{
 		ResetEvent(m_event);
-		m_fenceValue++;
-		m_commandQueue->Signal(m_fence, m_fenceValue);
-		m_fence->SetEventOnCompletion(m_fenceValue, m_event);
+		//m_fenceValue++;
+		//m_commandQueue->Signal(m_fence, m_fenceValue);
+		m_fence->SetEventOnCompletion(m_fenceValue -1, m_event);
 		WaitForSingleObject(m_event, INFINITE);
 	}
 }

@@ -14,6 +14,8 @@ namespace V10
 		XboxInputDevice();
 		~XboxInputDevice();
 
+		void Update();
+
 		// Inherited via InputInterface
 		virtual bool isKeyPressed(Button b) override;
 	};

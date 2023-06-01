@@ -50,15 +50,15 @@ namespace V10
 		std::shared_ptr<InputInterface> GetInputInterface() override;
 		virtual std::shared_ptr<CameraInterface> GetCameraInterface() override;
 
-
-		void RecordCL(ID3D12GraphicsCommandList* cl);
+		enum class CLcalls {None, Begin, End};
+		void RecordCL(ID3D12GraphicsCommandList* cl, DrawExecutor* drawExecutor, CLcalls calls = CLcalls::None);
 		void Execute(CommandList* cl);
 
 		ID3D12Device* GetDevice() { return m_device; }
 		CommandList* GetCommandList();
 		ID3D12Resource* CreateUploadBuffer(UINT64 size);
 		ID3D12Resource* CreateResource(D3D12_RESOURCE_DESC& desc, D3D12_RESOURCE_STATES state);
-		void BringBackAllocators(ID3D12Fence* fence, UINT64 value, int numCL, CommandList* commandLists);
+		void BringBackAllocators(ID3D12Fence* fence, UINT64 value, int numCL, CommandList** commandLists);
 		void ResetCommandList(int identifier);
 		ID3D12CommandAllocator* GetCommandAllocator();
 
