@@ -39,6 +39,10 @@ namespace V10
 
 		m_commandQueue = std::make_unique<CommandQueue>(this);
 
+		auto de1 = std::async(std::launch::async, [this]() {m_drawExecNormalMap = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShader.cso" }, DrawExecutor::GetRootParamsForNormalMap()); });
+		auto de2 = std::async(std::launch::async, [this]() {m_drawExecNoNormal = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShaderWoNormalMap.cso" }, DrawExecutor::GetRootParamsNoNormalMap()); });
+
+
 		DXGI_SWAP_CHAIN_DESC scDesc{};
 		scDesc.BufferCount = 2;
 		scDesc.BufferDesc = { 1920,1080,{60,1},DXGI_FORMAT_R16G16B16A16_FLOAT,DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE,DXGI_MODE_SCALING_CENTERED };
@@ -50,6 +54,18 @@ namespace V10
 		scDesc.OutputWindow = m_hWnd;
 		m_factory->CreateSwapChain(m_commandQueue->Get(), &scDesc, &m_swapchain);
 		m_currentBackBuffer = 0;
+
+		m_viewport.TopLeftX = 0;
+		m_viewport.TopLeftY = 0;
+		m_viewport.Width = 1920;
+		m_viewport.Height = 1080;
+		m_viewport.MinDepth = 0.0f;
+		m_viewport.MaxDepth = 1.0f;
+
+		m_scissorRect.left = 0;
+		m_scissorRect.top = 0;
+		m_scissorRect.right = 1920;
+		m_scissorRect.bottom = 1020;
 
 		D3D12_DESCRIPTOR_HEAP_DESC rtvDesc;
 		rtvDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -91,15 +107,11 @@ namespace V10
 		m_device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilDesc, m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
 
-		auto de1 = std::async(std::launch::async, [this]() {m_drawExecNormalMap = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShader.cso" }, DrawExecutor::GetRootParamsForNormalMap()); });
-		auto de2 = std::async(std::launch::async, [this]() {m_drawExecNoNormal = std::make_unique<DrawExecutor>(*this, DrawExecutor::Shaders{ "VertexShader.cso", "PixelShaderWoNormalMap.cso" }, DrawExecutor::GetRootParamsNoNormalMap()); });
-
 		m_camera = std::make_shared<Camera>();
 		m_inputInterface = std::make_shared<XboxInputDevice>();
 		m_camera->Update();
 		de1.wait();
 		de2.wait();
-
 	}
 
 
@@ -166,25 +178,9 @@ namespace V10
 	}
 
 	void Graphics::RecordCL(ID3D12GraphicsCommandList* cl, DrawExecutor* drawExecutor, CLcalls calls)
-	{
-		
-			D3D12_VIEWPORT viewport;
-			// Fill out the Viewport
-			viewport.TopLeftX = 0;
-			viewport.TopLeftY = 0;
-			viewport.Width = 1920;
-			viewport.Height = 1080;
-			viewport.MinDepth = 0.0f;
-			viewport.MaxDepth = 1.0f;
-
-			// Fill out a scissor rect
-			D3D12_RECT scissorRect;
-			scissorRect.left = 0;
-			scissorRect.top = 0;
-			scissorRect.right = 1920;
-			scissorRect.bottom = 1020;
+	{	
 			CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvDescHeap->GetCPUDescriptorHandleForHeapStart());
-			CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+			static CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 			rtvHandle.Offset(m_currentBackBuffer, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
 			
 			cl->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
@@ -197,8 +193,8 @@ namespace V10
 				cl->ClearDepthStencilView(m_dsDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 			}
 
-			cl->RSSetScissorRects(1, &scissorRect);
-			cl->RSSetViewports(1, &viewport);
+			cl->RSSetScissorRects(1, &m_scissorRect);
+			cl->RSSetViewports(1, &m_viewport);
 		
 
 		drawExecutor->Draw(cl, m_camera.get());

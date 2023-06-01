@@ -29,6 +29,9 @@ namespace V10
 		ID3D12Resource* m_depthStencilBuffer;
 		ID3D12DescriptorHeap* m_dsDescriptorHeap;
 		int m_currentBackBuffer;
+		D3D12_VIEWPORT m_viewport;
+		D3D12_RECT m_scissorRect;
+
 
 		std::unique_ptr<CommandQueue> m_commandQueue;
 		std::unique_ptr<CommandAllocatorPool> m_allocatorPool;
