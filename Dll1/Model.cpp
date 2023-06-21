@@ -7,7 +7,7 @@
 namespace V10
 {
 
-	Model::Model(Graphics& graphics, std::string name)
+	Model::Model(Graphics& graphics, std::string name, Material material)
 		:m_graphics(graphics)
 	{
 		Assimp::Importer import;
@@ -30,8 +30,7 @@ namespace V10
 		if(std::filesystem::exists(path))
 			m_NormalTextures = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), normalPath);
 
-		m_Material = Material{ 0.01, 1, 1 };
-
+		m_Material = material;
 	}
 
 	Model::~Model()
@@ -52,8 +51,9 @@ namespace V10
 	{
 		m_modelMat = DirectX::XMMatrixMultiply(m_modelMat, DirectX::XMMatrixRotationNormal(axis, angle));
 	}
-	void Model::Scale(DirectX::FXMVECTOR axis)
+	void Model::Scale(float scale)
 	{
+		m_modelMat = DirectX::XMMatrixMultiply(m_modelMat, DirectX::XMMatrixScaling(scale, scale, scale));
 	}
 	void Model::Draw(ID3D12GraphicsCommandList* cl)
 	{

@@ -31,7 +31,7 @@ namespace V10
         void ResetTransform() override;
         void Move(DirectX::XMVECTOR translation) override;
         void Rotate(DirectX::FXMVECTOR axis, float angle) override;
-        void Scale(DirectX::FXMVECTOR axis) override;
+        void Scale(float scale) override;
 
         void Draw(ID3D12GraphicsCommandList* cl);
         virtual DirectX::XMMATRIX GetModelMatrix() override;

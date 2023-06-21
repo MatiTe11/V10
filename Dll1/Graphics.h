@@ -48,7 +48,7 @@ namespace V10
 	public:
 		void Init(HWND hwnd) override;
 		void Update() override;
-		std::shared_ptr<ModelInterface> CreateModel(std::string model_name) override;
+		std::shared_ptr<ModelInterface> CreateModel(std::string model_name, Material material = Material{ 0.1,1,1 }) override;
 		std::shared_ptr<ModelInterface> CreateCubeGeometry(std::string tex_name) override;
 		std::shared_ptr<InputInterface> GetInputInterface() override;
 		virtual std::shared_ptr<CameraInterface> GetCameraInterface() override;

@@ -14,7 +14,7 @@ private:
 public:
 
 	CarGame(V10::GraphicsInterface* graphics);
-	void Update(double deltaTime);
+	void Update();
 
 };
 

@@ -23,7 +23,7 @@ namespace V10
 		m_descHeap = std::make_unique<DescriptorHeap>(graphics, 1);
 		m_Texture = std::make_unique<Texture2D>(graphics, m_descHeap->GetNextDescriptor(), diffusePath);
 		m_Mesh = std::make_unique<Mesh>(graphics);
-		m_Material = Material{ 1,1,1 };
+		m_Material = Material{ 0.1,1,1 };
 
 	}
 
@@ -53,16 +53,15 @@ namespace V10
 	}
 	void CubeGeometry::Move(DirectX::XMVECTOR translation)
 	{
-		//m_modelMat = DirectX::XMMatrixTranslationFromVector(translation);
-
 		m_modelMat = DirectX::XMMatrixMultiply(m_modelMat, DirectX::XMMatrixTranslationFromVector(translation));
 	}
 	void CubeGeometry::Rotate(DirectX::FXMVECTOR axis, float angle)
 	{
 		m_modelMat = DirectX::XMMatrixMultiply(m_modelMat, DirectX::XMMatrixRotationNormal(axis, angle));
 	}
-	void CubeGeometry::Scale(DirectX::FXMVECTOR axis)
+	void CubeGeometry::Scale(float scale)
 	{
+		m_modelMat = DirectX::XMMatrixMultiply(m_modelMat, DirectX::XMMatrixScaling(scale, scale, scale));
 	}
 	void CubeGeometry::Draw(ID3D12GraphicsCommandList* cl)
 	{

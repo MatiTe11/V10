@@ -23,13 +23,13 @@ namespace V10
         Material m_Material;
 
     public:
-        Model(Graphics& graphics, std::string modelPath);
+        Model(Graphics& graphics, std::string modelPath, Material material = Material{ 0.1, 1, 1 });
         ~Model();
 
         void ResetTransform() override;
         void Move(DirectX::XMVECTOR translation) override;
         void Rotate(DirectX::FXMVECTOR axis, float angle) override;
-        void Scale(DirectX::FXMVECTOR axis) override;
+        void Scale(float scale) override;
 
 
         void Draw(ID3D12GraphicsCommandList* cl);

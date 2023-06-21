@@ -47,14 +47,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	auto gr = GetGraphics();
 	gr->Init(hWnd);
     CarGame game(gr);
+    std::thread t1([&game]() {while (!g_quit)
+    {
+        game.Update();
+    }});
    
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GAME1));
 
 	MSG msg;
-    std::thread t1([&game]() {while (!g_quit)
-    {
-        game.Update(0);
-    }});
 	// Main message loop:
 	while (!g_quit)
 	{

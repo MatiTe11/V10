@@ -134,10 +134,10 @@ namespace V10
 		m_currentBackBuffer = m_currentBackBuffer % 2;
 	}
 
-	std::shared_ptr<ModelInterface> Graphics::CreateModel(std::string model_name)
+	std::shared_ptr<ModelInterface> Graphics::CreateModel(std::string model_name, Material material)
 	{
 
-		auto ret = std::make_shared<Model>(*this, model_name);
+		auto ret = std::make_shared<Model>(*this, model_name, material);
 		auto path = std::filesystem::current_path();
 		path /= model_name + "Normal.png";
 		if (std::filesystem::exists(path))
@@ -184,9 +184,10 @@ namespace V10
 			rtvHandle.Offset(m_currentBackBuffer, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
 			
 			cl->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
+
 			if (calls == CLcalls::Begin)
 			{
-				float color[4] = { 0.2,0.2,0.2,1 };
+				float color[4] = { 0.01,0.01,0.01,1 };
 				auto barrier = GetTransition(m_backBuffer[m_currentBackBuffer], D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
 				cl->ResourceBarrier(1, &barrier);
 				cl->ClearRenderTargetView(rtvHandle, color, 0, NULL);

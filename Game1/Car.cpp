@@ -6,7 +6,7 @@ Car::Car(std::shared_ptr<V10::ModelInterface> carModel, std::shared_ptr<V10::Inp
 	,m_input(input)
 {
 	m_carModel->ResetTransform();
-	m_carModel->Move(DirectX::XMVectorSet(3, -1, 5, 1));
+	m_carModel->Move(m_vec);
 	m_speed = 0;
 	m_rotation = 0;
 	m_acceleration = 2;
