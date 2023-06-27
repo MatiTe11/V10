@@ -39,9 +39,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
     //specular
     float3 viewDir = normalize(CamPosCB.camPos - input.position);
     float3 reflectDir = reflect(-lightDir, input.normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 256);
-
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), MaterialCB.specular);
 
     return (t1.Sample(s1, input.texCoord) * (MaterialCB.ambient + diff + spec));
-    //return (float4(rgb_norm,1) );
 }

@@ -23,7 +23,7 @@ namespace V10
         Material m_Material;
 
     public:
-        Model(Graphics& graphics, std::string modelPath, Material material = Material{ 0.1, 1, 1 });
+        Model(Graphics& graphics, std::string modelPath, Material material = Material{ 0.1, 1, 256 });
         ~Model();
 
         void ResetTransform() override;

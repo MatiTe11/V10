@@ -9,7 +9,7 @@ Car::Car(std::shared_ptr<V10::ModelInterface> carModel, std::shared_ptr<V10::Inp
 	m_carModel->Move(m_vec);
 	m_speed = 0;
 	m_rotation = 0;
-	m_acceleration = 2;
+	m_acceleration = 4;
 }
 
 void Car::Update(double deltaTime)
@@ -39,7 +39,7 @@ void Car::Update(double deltaTime)
 void Car::SetCameraBehind(std::shared_ptr<V10::CameraInterface> cam)
 {
 	using namespace DirectX;
-	static double distance = -8.0f;
-	cam->SetEyePosition(XMVectorAdd(XMVectorAdd(m_vec, XMVectorScale(XMVectorSet(sin(m_rotation), 0, cos(m_rotation),0),distance)), XMVectorSet(0, 2, 0, 0)));
+	static double distance = -10.0f;
+	cam->SetEyePosition(XMVectorAdd(XMVectorAdd(m_vec, XMVectorScale(XMVectorSet(sin(m_rotation), 0, cos(m_rotation),0),distance)), XMVectorSet(0, 3, 0, 0)));
 	cam->SetLookAt(XMVectorSet(sin(m_rotation), 0, cos(m_rotation), 0));
 }

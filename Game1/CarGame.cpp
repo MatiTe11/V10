@@ -5,20 +5,9 @@
 
 CarGame::CarGame(V10::GraphicsInterface* graphics) 
 	: m_grahpics(graphics)
-	, m_car(m_grahpics->CreateModel("car"), m_grahpics->GetInputInterface())
+	, m_car(m_grahpics->CreateModel("car", V10::Material{ 0.2,1,256 }), m_grahpics->GetInputInterface())
 	, m_camera(m_grahpics->GetCameraInterface())
 {
-	float speed = 0.01f;
-	static float pos = 0;
-	pos += speed;
-
-	m_dragon = m_grahpics->CreateModel("dragon");
-	m_dragon->ResetTransform();
-	m_dragon->Rotate(DirectX::XMVectorSet(0, 1, 0, 0), pos);
-	m_dragon->Move(DirectX::XMVectorSet(-3, -1, 5, 1));
-	auto backpack = m_grahpics->CreateModel("backpack");
-	backpack->ResetTransform();
-	backpack->Move(DirectX::XMVectorSet(0, 0, -10, 1));
 
 	auto house = m_grahpics->CreateModel("house");
 	house->ResetTransform();
@@ -52,15 +41,7 @@ CarGame::CarGame(V10::GraphicsInterface* graphics)
 void CarGame::Update()
 {
 	auto start = std::chrono::high_resolution_clock::now();
-	float speed = 0.01f;
-	static float pos = 0;
-	pos += speed;
-	m_dragon->ResetTransform();
-	m_dragon->Rotate(DirectX::XMVectorSet(0, 1, 0, 0), pos);
-
-	m_dragon->Move(DirectX::XMVectorSet(-30, -1, 5, 1)); //-30
-
-
+	
 	m_car.Update(m_deltaTime);
 	m_car.SetCameraBehind(m_camera);
 	m_grahpics->Update();

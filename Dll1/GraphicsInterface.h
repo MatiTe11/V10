@@ -16,7 +16,7 @@ namespace V10
 	public:
 		virtual void Init(HWND hwnd) = 0;
 		virtual void Update() = 0;
-		virtual std::shared_ptr<ModelInterface> CreateModel(std::string model_name, Material material = Material{ 0.1,1,1 }) = 0;
+		virtual std::shared_ptr<ModelInterface> CreateModel(std::string model_name, Material material = Material{ 0.1, 1, 256 }) = 0;
 		virtual std::shared_ptr<ModelInterface> CreateCubeGeometry(std::string tex_name) = 0;
 		virtual std::shared_ptr<InputInterface> GetInputInterface() = 0;
 		virtual std::shared_ptr<CameraInterface> GetCameraInterface() = 0;
