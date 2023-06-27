@@ -41,8 +41,6 @@ namespace V10
 	void CommandQueue::Sync()
 	{
 		ResetEvent(m_event);
-		//m_fenceValue++;
-		//m_commandQueue->Signal(m_fence, m_fenceValue);
 		m_fence->SetEventOnCompletion(m_fenceValue -1, m_event);
 		WaitForSingleObject(m_event, INFINITE);
 	}

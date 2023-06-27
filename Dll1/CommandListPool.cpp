@@ -31,7 +31,7 @@ namespace V10
 
 	void CommandListPool::MakeAvailable(int index)
 	{
-		m_availableIndexes.push(index); //TODO: kolejka to chyba nie najlepsza struktura
+		m_availableIndexes.push(index);
 	}
 
 	void CommandListPool::AddCommandList()

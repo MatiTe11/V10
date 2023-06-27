@@ -16,19 +16,16 @@ CarGame::CarGame(V10::GraphicsInterface* graphics)
 
 	auto lamp = m_grahpics->CreateModel("lampNoGlass");
 	lamp->ResetTransform();
-	//lamp->Scale(2);
 	lamp->Move(DirectX::XMVectorSet(0, -5.5, 0, 1));
 
 	auto glass = m_grahpics->CreateModel("glass", V10::Material{ 1,1,1 });
 	glass->ResetTransform();
-	//lamp->Scale(2);
 	glass->Move(DirectX::XMVectorSet(0, -5.5, 0, 1));
 
 
 	auto brick = m_grahpics->CreateCubeGeometry("cobb");
 	brick->ResetTransform();
 	brick->Scale(30);
-	//brick->Move(DirectX::XMVectorSet(0, -7, 0, 1)); //scale 30 pos -20
 	brick->Move(DirectX::XMVectorSet(0, -20, 0, 1)); //scale 30 pos -20
 
 	

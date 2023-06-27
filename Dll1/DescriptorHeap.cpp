@@ -25,7 +25,6 @@ namespace V10
 	{
 		auto freeSlot = m_nextFreeSlot;
 		m_nextFreeSlot += m_incrementSize;
-		///TODO: kompletnie zle, dziala tylko dla jednego descriptora!!!
 		DescLocation loc{ m_descHeap, m_descHeap->GetCPUDescriptorHandleForHeapStart(), m_descHeap->GetGPUDescriptorHandleForHeapStart() };
 		loc.cpuHandle.ptr += m_incrementSize * m_usedSlots;
 		loc.gpuHandle.ptr += m_incrementSize * m_usedSlots;

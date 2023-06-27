@@ -136,8 +136,6 @@ namespace V10
 		}
 
 		cl->Close();
-		m_graphics.Execute(commandlist);//TODO: Ÿle zrobione
-
-		//bufferUploadHeap->Release(); //nie ruszaæ bo trójk¹t robi siê czarny (nwm czemu)
+		m_graphics.Execute(commandlist);
 	}
 }

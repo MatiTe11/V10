@@ -268,7 +268,7 @@ namespace V10
 
 	void Graphics::ResetCommandList(int identifier)
 	{
-		m_commandListPool->MakeAvailable(identifier); //TODO: Ÿle powinno byæ po execute a nie reset
+		m_commandListPool->MakeAvailable(identifier);
 	}
 
 	ID3D12CommandAllocator* Graphics::GetCommandAllocator()

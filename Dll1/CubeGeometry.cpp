@@ -44,7 +44,6 @@ namespace V10
 	void CubeGeometry::Update(double elapsedSeconds)
 	{
 		const DirectX::XMVECTOR rotationAxis = DirectX::XMVectorSet(0, 1, 1, 1);
-		//m_modelMat = DirectX::XMMatrixRotationAxis(rotationAxis, DirectX::XMConvertToRadians(0));
 	}
 	void CubeGeometry::ResetTransform()
 	{
